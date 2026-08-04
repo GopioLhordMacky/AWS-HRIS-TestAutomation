@@ -1,5 +1,5 @@
-from helpers.client_page_helpers import *
-from helpers.main_helpers.check_components import *
+from pages.client_page import *
+ 
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
 # from locators.shared.shared_locators import Modal_Locators

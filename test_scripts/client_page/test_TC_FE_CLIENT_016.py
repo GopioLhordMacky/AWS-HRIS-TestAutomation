@@ -1,12 +1,10 @@
-from helpers.client_page_helpers import *
-from helpers.main_helpers.check_components import *
+from pages.client_page import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
 
 @pytest.mark.passed
-def test_tc_fe_clients_016():
+def test_tc_fe_clients_016(driver):
     """Verify Phone Number Field Accepts Valid Phone Number Format in Add Modal."""
-    driver = open_browser("chrome")
     login_client_page(driver)
 
     # Step 1: Open Add Client Modal
@@ -19,10 +17,10 @@ def test_tc_fe_clients_016():
     )
 
     # Step 5: Click Save button to submit the form
-    click_save_only(driver)
+    ModalActions.click_save_only(driver)
 
     # Verification: Ensure no validation error alert/message is triggered
-    assert not check_error_message(driver), \
+    assert not ModalNotifications.check_error_message(driver), \
         "Expected valid phone number '09171234567' to be accepted, but validation error appeared."
 
-    close_browser(driver)
+    driver.quit()

@@ -19,10 +19,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # 2. Browser & Navigation Actions
-from helpers.main_helpers import *
+from components.base_browser import BrowserSetup, ElementActions
+from components.navigation import Session, PageNavigation, KeyboardNavigation
+from components.elements import ComponentVerifier, FormControls 
+from components.modals import ModalActions, ModalNotifications
+from components.tables import TableActions, TableData, TableSearch, TableSorting, TablePagination
 
 # 3. Core Component Helpers
-from helpers.client_page_helpers import *
+from pages.client_page import *
 
 # 4. All Categorized Locators
 from locators.client_page_locators import (
@@ -42,3 +46,5 @@ from locators.client_page_locators import (
 )
 
 from data.client_page_inputs import *
+from pages.client_page import *
+from pages.base_page import *

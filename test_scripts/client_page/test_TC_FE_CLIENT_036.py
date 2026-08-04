@@ -1,6 +1,6 @@
 import time
-from helpers.client_page_helpers import *
-from helpers.main_helpers.check_components import *
+from pages.client_page import *
+ 
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
 
@@ -12,7 +12,7 @@ def test_tc_fe_clients_36():
 
     # Step 1: Open Add Client Modal
     click_edit_button(driver)
-    assert is_component_visible(driver, Update_Modal_Inputs.MODAL_BODY), "Modal failed to open."
+    assert ComponentVerifier.is_component_visible(driver, Update_Modal_Inputs.MODAL_BODY), "Modal failed to open."
 
     # Step 2: Measure Industry Dropdown Performance
     start_time = time.perf_counter()

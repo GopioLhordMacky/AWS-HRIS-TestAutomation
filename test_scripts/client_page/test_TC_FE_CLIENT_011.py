@@ -1,12 +1,10 @@
-from helpers.client_page_helpers import *
-from helpers.main_helpers.check_components import *
+from pages.client_page import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
 
 @pytest.mark.passed
-def test_tc_fe_clients_011():
+def test_tc_fe_clients_011(driver):
     """Verify that adding a client with leading/trailing whitespace in fields successfully saves and displays in the table."""
-    driver = open_browser("chrome")
     login_client_page(driver)
 
     # Generate dynamic client name
@@ -24,9 +22,9 @@ def test_tc_fe_clients_011():
     )
 
     # Step 2: Save and confirm entry
-    click_save_confirm(driver)
+    ModalActions.click_save_confirm(driver)
 
     # Step 3: Verify the new entry exists in the table using check_table_data
-    assert check_table_data_by_search(driver, "Client Name", client_name), f"Client Name '{client_name}' not found in table."
+    assert ComponentVerifier.check_table_data_by_search(driver, "Client Name", client_name), f"Client Name '{client_name}' not found in table."
 
-    close_browser(driver)
+    driver.quit()

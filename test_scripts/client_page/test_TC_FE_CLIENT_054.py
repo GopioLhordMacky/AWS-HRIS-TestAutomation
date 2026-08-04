@@ -1,5 +1,5 @@
-from helpers.client_page_helpers import *
-from helpers.main_helpers.check_components import *
+from pages.client_page import *
+ 
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
 
@@ -22,10 +22,10 @@ def test_tc_fe_clients_054():
     toggle_active_status(driver, row_index=target_row, column_name=target_col)
 
     # Step 2 & 3: Check visibility of the confirmation controls
-    assert is_component_visible(driver, ModalLocators.CONFIRM_BUTTON), \
+    assert ComponentVerifier.is_component_visible(driver, ModalLocators.CONFIRM_BUTTON), \
         "Confirmation dialog's CONFIRM button is not visible!"
         
-    assert is_component_visible(driver, ModalLocators.CANCEL_BUTTON), \
+    assert ComponentVerifier.is_component_visible(driver, ModalLocators.CANCEL_BUTTON), \
         "Confirmation dialog's CANCEL button is not visible!"
 
     # Clean up modal view if needed (optional)

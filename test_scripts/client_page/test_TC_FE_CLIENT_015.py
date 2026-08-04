@@ -1,12 +1,10 @@
-from helpers.client_page_helpers import *
-from helpers.main_helpers.check_components import *
+from pages.client_page import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
 
 @pytest.mark.passed
-def test_tc_fe_clients_015():
+def test_tc_fe_clients_015(driver):
     """Verify Email Address Field Accepts Valid Email Format in Add Modal."""
-    driver = open_browser("chrome")
     login_client_page(driver)
 
     # Step 1: Open Add Client Modal
@@ -19,10 +17,10 @@ def test_tc_fe_clients_015():
     )
 
     # Step 5: Click Save button to submit the form
-    click_save_only(driver)
+    ModalActions.click_save_only(driver)
 
     # Verification: Ensure no validation error alert/message is triggered
-    assert not check_error_message(driver), \
+    assert not ModalNotifications.check_error_message(driver), \
         "Expected valid email 'client@email.com' to be accepted, but validation error appeared."
 
-    close_browser(driver)
+    driver.quit()

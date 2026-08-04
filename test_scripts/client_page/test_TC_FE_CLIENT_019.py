@@ -1,12 +1,10 @@
-from helpers.client_page_helpers import *
-from helpers.main_helpers.check_components import *
+from pages.client_page import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
 
 @pytest.mark.passed
-def test_tc_fe_clients_019():
+def test_tc_fe_clients_019(driver):
     """Verify the Industry dropdown displays the correct list of options."""
-    driver = open_browser("chrome")
     login_client_page(driver)
 
     # Step 1: Open the "Add Client" modal
@@ -16,7 +14,7 @@ def test_tc_fe_clients_019():
     expected_industries = Options.industry_options
 
     # Step 2: Verify the dropdown options list matches expected options
-    assert verify_dropdown_options(
+    assert ComponentVerifier.verify_dropdown_options(
         driver,
         Update_Modal_Inputs.INDUSTRY_SELECT,
         expected_industries
@@ -31,6 +29,6 @@ def test_tc_fe_clients_019():
     )
 
     # Step 4: Close the modal using click_close
-    click_close(driver)
+    ModalActions.click_close(driver)
 
-    close_browser(driver)
+    driver.quit()

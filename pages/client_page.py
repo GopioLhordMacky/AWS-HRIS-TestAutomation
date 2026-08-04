@@ -1,19 +1,17 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from helpers.main_helpers.login import *
 from locators.client_page_locators import Login_Locators, Client_Locators
 from data.client_page_inputs import *
-from helpers.client_page_helpers import *
-from helpers.main_helpers.check_components import *
+from pages.client_page import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
 
-
+@staticmethod
 def login_client_page(driver, url="https://test.hris2.awsys-i.com/employee-list", username="macky-temp.gopio@awsys-i.com", password="Awsys123@"):
     """Logs in and navigates directly to the Client Page."""
-    login(driver, username, password, url=url)
-    navigate_to_page(driver, "Client")
+    Session.login(driver, username, password, url=url)
+    PageNavigation.navigate_to_page(driver, "Client")
 
 def is_client_page_loaded(driver, timeout=15):
     """Verifies that the Client page header and table are visible."""
@@ -149,8 +147,8 @@ def update_client_form(
     address_field.clear()
     address_field.send_keys(address)
 
-    fill_edit_select_modal(driver, "Country", country)
-    fill_edit_select_modal(driver, "Industry", industry)
+    ModalActions.fill_edit_select_modal(driver, "Country", country)
+    ModalActions.fill_edit_select_modal(driver, "Industry", industry)
 
 
 def verify_client_modal_fields_are_empty(driver):
@@ -171,7 +169,7 @@ def verify_client_modal_fields_are_empty(driver):
     ]
 
     for field_name, locator in fields_to_check:
-        if not verify_input_is_empty(driver, locator):
+        if not ComponentVerifier.verify_input_is_empty(driver, locator):
             print(f"[Client Modal Check Failed] '{field_name}' field was expected to be empty, but contained data.")
             return False
 
