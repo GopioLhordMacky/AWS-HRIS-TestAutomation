@@ -1,0 +1,46 @@
+from helpers.client_page_helpers import *
+from helpers.main_helpers.check_components import *
+from imports.main_imports.main_imports import *
+from imports.client_page_imports import *
+
+@pytest.mark.passed
+def test_tc_fe_clients_029():
+    """
+    (Functionality) Verify Search Bar Clears and Table Resets:
+    1. Record initial table count via pagination.
+    2. Enter a search term to filter results and record filtered count.
+    3. Clear the search bar manually and verify table resets back to initial state.
+    """
+    driver = open_browser("chrome")
+    login_client_page(driver)
+
+    # Step 1: Wait for initial table load and record initial pagination info
+    time.sleep(3)
+    initial_pagination = get_pagination_information(driver)
+
+    # Step 2: Search for a term to filter the table
+    search_term = "test"
+    search_in_table(driver, search_term)
+    time.sleep(3)
+    
+    searched_pagination = get_pagination_information(driver)
+
+    # Assert that the search actually filtered the table (counts should not be equal)
+    assert initial_pagination != searched_pagination, (
+        f"Search term '{search_term}' did not change table results! "
+        f"Initial: {initial_pagination}, Searched: {searched_pagination}"
+    )
+
+    # Step 3: Clear the search term
+    clear_input_field(driver, Filter_and_Search_Section.SEARCH_BAR)
+    time.sleep(3)
+
+    cleared_pagination = get_pagination_information(driver)
+
+    # Step 4: Verify the table resets back to the initial unfiltered state
+    assert cleared_pagination == initial_pagination, (
+        f"Table failed to reset after clearing search bar! "
+        f"Expected initial: {initial_pagination}, Got: {cleared_pagination}"
+    )
+
+    close_browser(driver)
