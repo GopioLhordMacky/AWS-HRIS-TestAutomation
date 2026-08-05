@@ -9,11 +9,11 @@ def login_and_initial_setup(driver, username, password):
     This prevents 'Element Not Found' errors on subsequent navigation steps.
     """
     login_page = LoginPage(driver)
-    print(f"[Auth] Logging in")
+    # print(f"[Auth] Logging in")
     login_page.login(username, password)
     
     employee_list_page = EmployeeListPage(driver)
-    print("[Auth] Waiting for Employee List Page to load...")
+    # print("[Auth] Waiting for Employee List Page to load...")
     employee_list_page.wait_until_loaded()
-    print("[Auth] Login successful: Session is now ready for navigation.")
+    # print("[Auth] Login successful: Session is now ready for navigation.")
     return employee_list_page

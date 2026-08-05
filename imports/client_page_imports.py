@@ -26,7 +26,9 @@ from components.modals import ModalActions, ModalNotifications
 from components.tables import TableActions, TableData, TableSearch, TableSorting, TablePagination
 
 # 3. Core Component Helpers
+from data.client_page_inputs import *
 from pages.client_page import *
+from pages.base_page import *
 
 # 4. All Categorized Locators
 from locators.client_page_locators import (
@@ -45,6 +47,3 @@ from locators.client_page_locators import (
     Location_Management
 )
 
-from data.client_page_inputs import *
-from pages.client_page import *
-from pages.base_page import *

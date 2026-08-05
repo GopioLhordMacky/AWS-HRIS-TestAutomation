@@ -7,11 +7,11 @@ from pages.client_page import ClientPage
 def go_to_client_page(driver, via="url"):
     if via == "url":
         driver.get(f"{BASE_URL}{CLIENT}")
-        print(f"[Navigation] Navigating to Client Page via URL: {BASE_URL}{CLIENT}")
+        # print(f"[Navigation] Navigating to Client Page via URL: {BASE_URL}{CLIENT}")
     elif via == "sidebar":
         sidebar = Sidebar(driver)
         sidebar.click_client_menu()
     else:
         raise ValueError(f"Unknown navigation method: {via}")
 
-    return ClientPage(driver)
+    return ClientPage()

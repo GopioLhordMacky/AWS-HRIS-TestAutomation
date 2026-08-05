@@ -1,8 +1,11 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from config.config import IMPLICIT_WAIT
 from pages.base_page import BasePage
 from locators.login_locators import LoginLocators as Locators
 
 class LoginPage(BasePage):    
+        
     def login(self, username, password):
         """
         Perform the login action by entering username and password, then clicking the login button.

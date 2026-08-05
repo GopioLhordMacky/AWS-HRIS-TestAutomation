@@ -1,11 +1,14 @@
 from pages.client_page import *
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.passed
-def test_tc_fe_clients_014(driver):
+def test_tc_fe_clients_014(authenticated_driver):
     """Verify Country Dropdown Data in Add Client Modal matches active countries in Location Management."""
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
     time.sleep(3)
 
     # Step 1: Navigate to Location Management page to collect dynamic country data
@@ -19,7 +22,7 @@ def test_tc_fe_clients_014(driver):
     PageNavigation.navigate_to_page(driver, "Client")
 
     # Step 3: Open Add Client modal
-    click_add_client_button(driver, timeout=10)
+    ClientPage.click_add_client_button(driver)
 
     # Step 4: Verify Country dropdown options match expected countries from Location Management
     assert ComponentVerifier.verify_dropdown_options(
