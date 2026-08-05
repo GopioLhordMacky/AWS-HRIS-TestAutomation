@@ -30,6 +30,9 @@ class Sidebar(BasePage):
     def click_client_menu(self):
         self.click(Locators.CLIENT_MENU)
 
+    def click_client_menu(self):
+        self.click(Locators.SCHOOL_MENU)
+
     def is_item_visible_under_section(self, section_name, item_name):
 
         xpath = (

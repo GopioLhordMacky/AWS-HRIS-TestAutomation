@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from imports.main_imports.main_imports import *
 
-class BrowserSetup():
+class BrowserSetup:
 
     @staticmethod
     def open_browser(browser_name="chrome"):
@@ -49,9 +49,10 @@ class ElementActions:
         driver.execute_script("arguments[0].scrollIntoView();", element)
 
     @staticmethod
-    def ensure_element_visible(driver, element, timeout=10):
-        WebDriverWait(driver, timeout).until(EC.visibility_of(element))
-        return element
+    def ensure_element_visible(driver, locator, timeout=10):
+        return WebDriverWait(driver, timeout).until(
+        EC.visibility_of_element_located(locator)
+    )
 
     @staticmethod
     def clear_input_field(driver, locator):

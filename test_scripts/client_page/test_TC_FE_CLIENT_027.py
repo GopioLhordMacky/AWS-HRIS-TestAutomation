@@ -22,10 +22,10 @@ def test_tc_fe_clients_027(authenticated_driver):
     TableSearch.search_in_table(driver, test_search_input)
 
     # Step 3: Verify the search bar displays the typed string correctly
-    assert verify_input_matches(
+    assert ComponentVerifier.verify_input_matches(
         driver,
         locator=Filter_and_Search_Section.SEARCH_BAR,
         expected_text=test_search_input
     ), f"Search bar input mismatch! Expected: '{test_search_input}'"
 
-    close_browser(driver)
+    driver.quit()

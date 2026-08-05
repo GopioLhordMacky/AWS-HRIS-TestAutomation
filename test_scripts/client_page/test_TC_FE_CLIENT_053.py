@@ -1,10 +1,11 @@
 from pages.client_page import *
- 
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.skip(reason="Client Page has errors. Toggle Switch both has 'checked' attribute")
-def test_tc_fe_clients_052():
+def test_tc_fe_clients_052(authenticated_driver):
     """
     TC_FE_CLIENTS_052: (Functionality) Verify Active toggle default state for Active records
     
@@ -12,8 +13,8 @@ def test_tc_fe_clients_052():
     2. Filter records by Status: Active (if filter dropdown is present).
     3. Iterate through rows in the table and verify Active toggle state is ON (True).
     """
-    driver = open_browser("chrome")
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
 
     # Optional: If you have a status filter helper to ensure only Active records are shown
     select_custom_dropdown(driver, "Status", "Active")

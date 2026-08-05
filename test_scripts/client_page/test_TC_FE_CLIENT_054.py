@@ -1,10 +1,11 @@
 from pages.client_page import *
- 
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.passed
-def test_tc_fe_clients_054():
+def test_tc_fe_clients_054(authenticated_driver):
     """
     TC_FE_CLIENTS_054: (Functionality) Verify Toggle Button with Confirmation Message
     
@@ -12,8 +13,8 @@ def test_tc_fe_clients_054():
     2. Verify that the confirmation dialog/message appears immediately.
     3. Verify that both 'Confirm' and 'Cancel' options are visible to the user.
     """
-    driver = open_browser("chrome")
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
 
     target_row = 1
     target_col = "Active"

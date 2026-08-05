@@ -1,10 +1,11 @@
 from pages.client_page import *
- 
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.passed
-def test_tc_fe_clients_063():
+def test_tc_fe_clients_063(authenticated_driver):
     """
     TC_FE_CLIENTS_063: (Accessibility) Verify Pagination Controls keyboard navigation
     
@@ -14,8 +15,8 @@ def test_tc_fe_clients_063():
     4. Use tab_navigation to focus the Previous button and press SPACE.
     5. Verify pagination range returns back to page 1.
     """
-    driver = open_browser("chrome")
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
     time.sleep(2)
 
     # Step 1: Record initial pagination state on Page 1

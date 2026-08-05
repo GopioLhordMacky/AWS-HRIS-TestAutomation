@@ -1,10 +1,11 @@
 from pages.client_page import *
- 
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.passed
-def test_tc_fe_clients_041():
+def test_tc_fe_clients_041(authenticated_driver):
     """
     TC_FE_CLIENTS_041: (Functionality) Verify Unsaved Changes Are Discarded When Closing the Modal
     
@@ -15,8 +16,8 @@ def test_tc_fe_clients_041():
     5. Reopen "Update Client" modal for the exact same row.
     6. Verify that modal pre-selected data matches original table values, discarding changes.
     """
-    driver = open_browser("chrome")
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
     time.sleep(2)  
     target_row_idx = 3  # 1-based index for row 1
 

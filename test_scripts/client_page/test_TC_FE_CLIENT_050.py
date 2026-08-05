@@ -1,10 +1,11 @@
 from pages.client_page import *
- 
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.passed
-def test_tc_fe_clients_050():
+def test_tc_fe_clients_050(authenticated_driver):
     """
     TC_FE_CLIENTS_050: (Functionality) Verify Country values are displayed correctly.
     
@@ -14,8 +15,8 @@ def test_tc_fe_clients_050():
     4. Paginate using go_to_next_page until the next button becomes disabled.
     """
     ## THIS WILL FAIL BECAUSE SOME COUNTRY CELLS ARE EMPTY. NEED TO FIX DATA IN DB OR ADD A CHECK FOR EMPTY CELLS. ## 
-    driver = open_browser("chrome")
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
 
     target_column = "Country"
 

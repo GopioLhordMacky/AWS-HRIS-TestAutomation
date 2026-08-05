@@ -15,6 +15,11 @@ class SidebarLocators:
         "//span[contains(@class,'navLinkText')][normalize-space()='Client']"
     )
 
+    SCHOOL_MENU = (
+        By.XPATH,
+        "//span[contains(@class,'navLinkText')][normalize-space()='School']"
+    )
+
 
 # For collapsible sidebar - not currently implemented, but keeping here for future reference
 # class CollapsibleSidebarLocators:

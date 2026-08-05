@@ -33,6 +33,14 @@ class TableData:
         raise ValueError(f"Column '{column_name}' not found in table headers: {headers}")
 
     @staticmethod
+    def get_dropdown_value(driver, label_name):
+        elems = driver.find_elements(
+            By.XPATH, 
+            f"//div[contains(@class, 'modal-content')]//label[text()='{label_name}']/following::div[contains(@class, '-singleValue')][1]"
+        )
+        return elems[0].text.strip() if elems else ""
+
+    @staticmethod
     def check_column_cells(driver, column_name):
         col_idx = TableData.get_column_index(driver, column_name)
         rows = driver.find_elements(*CommonTableLocators.TABLE_ROWS)
@@ -353,5 +361,5 @@ class TablePagination:
 
     @staticmethod
     def get_pagination_information(driver):
-        element = ElementActions.ensure_element_visible(driver, *PaginationLocators.PAGINATION_INFO_TEXT)
+        element = ElementActions.ensure_element_visible(driver, PaginationLocators.PAGINATION_INFO_TEXT)
         return element.text.strip()

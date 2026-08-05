@@ -1,10 +1,11 @@
 from pages.client_page import *
- 
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.passed
-def test_tc_fe_clients_059():
+def test_tc_fe_clients_059(authenticated_driver):
     """
     TC_FE_CLIENTS_059: (Functionality) Verify Previous and Next buttons are disabled on first and last pages
     
@@ -13,8 +14,8 @@ def test_tc_fe_clients_059():
     3. Loop using go_to_next_page(driver) until pagination range no longer changes.
     4. Assert Next button is disabled on the final page.
     """
-    driver = open_browser("chrome")
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
 
     # Step 1: Check Previous button state on First Page
     prev_btn = driver.find_element(*PaginationLocators.PREV_PAGE_BTN)

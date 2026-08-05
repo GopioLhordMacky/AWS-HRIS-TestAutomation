@@ -1,10 +1,11 @@
 from pages.client_page import *
- 
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.passed
-def test_tc_fe_clients_060():
+def test_tc_fe_clients_060(authenticated_driver):
     """
     TC_FE_CLIENTS_060: (Functionality) Verify Rows Per Page Change
     
@@ -12,8 +13,8 @@ def test_tc_fe_clients_060():
     2. Verify that the 'Rows per page' dropdown contains options: [10, 20, 50, 100].
     3. Iterate through each option, select it, and verify the displayed table rows adapt.
     """
-    driver = open_browser("chrome")
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
 
     expected_counts = [10, 20, 50, 100]
 

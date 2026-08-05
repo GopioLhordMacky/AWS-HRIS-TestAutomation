@@ -1,10 +1,11 @@
 from pages.client_page import *
- 
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.passed
-def test_tc_fe_clients_057():
+def test_tc_fe_clients_057(authenticated_driver):
     """
     TC_FE_CLIENTS_057: (Functionality) Verify Pagination controls visibility
     
@@ -13,8 +14,8 @@ def test_tc_fe_clients_057():
     3. Verify visibility and non-empty content of the Pagination Information text.
     4. Verify visibility of Next and Previous pagination navigation buttons.
     """
-    driver = open_browser("chrome")
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
 
     # 1. Assert Rows Per Page Dropdown visibility
     assert ComponentVerifier.is_component_visible(driver, PaginationLocators.ROWS_PER_PAGE_DROPDOWN), \

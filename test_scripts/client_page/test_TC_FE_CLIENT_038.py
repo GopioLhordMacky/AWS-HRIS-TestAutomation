@@ -1,25 +1,26 @@
 from pages.client_page import *
- 
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.passed
-def test_tc_fe_clients_038():
+def test_tc_fe_clients_038(authenticated_driver):
     """
     (Functionality) Verify Pre-Selected Data in Update Client Textbox and 
     Dropdowns Matches Table Data.
     """
-    driver = open_browser("chrome")
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
     time.sleep(3)
 
     target_row_idx = 1  # 1-based index for row 1
 
     # Step 1: Scrape text directly using column headers instead of hardcoded array indices
-    client_name_col = get_column_index(driver, "Client Name")
-    industry_col = get_column_index(driver, "Industry")
-    country_col = get_column_index(driver, "Country")
-    contact_col = get_column_index(driver, "Contact Person")
+    client_name_col = TableData.get_column_index(driver, "Client Name")
+    industry_col = TableData.get_column_index(driver, "Industry")
+    country_col = TableData.get_column_index(driver, "Country")
+    contact_col = TableData.get_column_index(driver, "Contact Person")
 
     table_data = {
         "client_name": driver.find_element(By.XPATH, f"//tbody/tr[{target_row_idx}]/td[{client_name_col}]").text.strip(),
@@ -30,7 +31,7 @@ def test_tc_fe_clients_038():
 
     # Step 2: Open modal
     time.sleep(2)
-    click_edit_btn_by_row_index(driver, row_idx=target_row_idx)
+    TableActions.click_edit_btn_by_row_index(driver, row_idx=target_row_idx)
     time.sleep(2)
 
 
@@ -60,4 +61,4 @@ def test_tc_fe_clients_038():
     assert modal_industry == table_data["industry"], f"Industry mismatch! Table: {table_data['industry']} | Modal: {modal_industry}"
     assert modal_country == table_data["country"], f"Country mismatch! Table: {table_data['country']} | Modal: {modal_country}"
 
-    close_browser(driver)
+    driver.quit()

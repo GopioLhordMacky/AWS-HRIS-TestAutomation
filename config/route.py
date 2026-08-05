@@ -11,3 +11,5 @@ FISCAL_YEAR = "/settings/fiscal-year"
 LOCATION = "/settings/location"
 
 CLIENT = "/settings/client"
+
+SCHOOL = "/settings/school"
