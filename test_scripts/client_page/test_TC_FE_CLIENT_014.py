@@ -9,14 +9,14 @@ def test_tc_fe_clients_014(driver):
     time.sleep(3)
 
     # Step 1: Navigate to Location Management page to collect dynamic country data
-    navigate_to_page(driver, "Location")
+    PageNavigation.navigate_to_page(driver, "Location")
     time.sleep(3)
     
     # Store all country names from the "Location Name" / Country column
     expected_countries = TableData.check_column_cells(driver, "Location Name")
 
     # Step 2: Navigate to Client page
-    navigate_to_page(driver, "Client")
+    PageNavigation.navigate_to_page(driver, "Client")
 
     # Step 3: Open Add Client modal
     click_add_client_button(driver, timeout=10)
