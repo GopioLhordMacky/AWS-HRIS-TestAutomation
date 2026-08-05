@@ -20,7 +20,7 @@ def test_tc_fe_clients_017(authenticated_driver):
 
     # Step 11: Reopen modal and verify fields are cleared
     ClientPage.click_add_client_button(driver)
-    assert ComponentVerifier.verify_input_is_empty(driver), \
+    assert ClientPage.verify_client_modal_fields_are_empty(driver), \
         "Modal fields were not cleared after closing via Cancel button and reopening."
 
     # --- Pass 2: Close via Header 'X' / Close Button ---
@@ -32,7 +32,7 @@ def test_tc_fe_clients_017(authenticated_driver):
 
     # Step 14: Reopen modal and verify fields are cleared
     ClientPage.click_add_client_button(driver)
-    assert ComponentVerifier.verify_input_is_empty(driver), \
+    assert ClientPage.verify_client_modal_fields_are_empty(driver), \
         "Modal fields were not cleared after closing via header 'X' button and reopening."
 
     # --- Pass 3: Close via Clicking Outside the Modal ---

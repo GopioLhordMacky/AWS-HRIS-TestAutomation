@@ -1,14 +1,17 @@
 from pages.client_page import *
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.passed
-def test_tc_fe_clients_019(driver):
+def test_tc_fe_clients_019(authenticated_driver):
     """Verify the Industry dropdown displays the correct list of options."""
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
 
     # Step 1: Open the "Add Client" modal
-    click_add_client_button(driver)
+    ClientPage.click_add_client_button(driver)
 
     # Expected list of Industry options from test data
     expected_industries = Options.industry_options
@@ -22,7 +25,7 @@ def test_tc_fe_clients_019(driver):
 
     # Step 3: Select an option ("Automotive") using react dropdown helper
     time.sleep(3)
-    select_react_dropdown(
+    ClientPage.select_react_dropdown(
         driver,
         Update_Modal_Inputs.INDUSTRY_SELECT,
         "Automotive"

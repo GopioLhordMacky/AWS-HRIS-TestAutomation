@@ -47,11 +47,11 @@ class ModalActions:
         cancel_btn.click()
 
     @staticmethod
-    def click_close(driver, timeout=10):
-        """Clicks the main Save button inside an active modal."""
+    def click_close_x(driver, timeout=10):
+        """Clicks the 'X' button in the modal header to close it."""
         wait = WebDriverWait(driver, timeout)
-        save_btn = wait.until(EC.element_to_be_clickable(ModalLocators.CLOSE_BUTTON))
-        save_btn.click()
+        close_x_btn = wait.until(EC.element_to_be_clickable(ModalLocators.CLOSE_BUTTON_X))
+        close_x_btn.click()
 
     @staticmethod
     def click_outside_modal(driver, timeout=10):

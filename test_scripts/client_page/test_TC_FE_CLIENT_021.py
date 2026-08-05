@@ -1,12 +1,14 @@
 from pages.client_page import *
- 
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.passed
-def test_tc_fe_clients_021(driver):
+def test_tc_fe_clients_021(authenticated_driver):
     """Verify that the Industry dropdown selection filters the data displayed in the table."""
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
 
     target_dropdown = "Industry"
     target_industry = "Information Technology Services"

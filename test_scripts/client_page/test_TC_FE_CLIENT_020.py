@@ -1,12 +1,14 @@
 from pages.client_page import *
- 
+from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
 @pytest.mark.passed
-def test_tc_fe_clients_020(driver):
+def test_tc_fe_clients_020(authenticated_driver):
     """Verify Default Selected Value in Industry Dropdown on Clients page."""
-    login_client_page(driver)
+    driver = authenticated_driver
+    go_to_client_page(driver, via="url")
     time.sleep(3)
 
     # Steps 1-4: Observe Industry dropdown default selection on the main Clients page table filter
