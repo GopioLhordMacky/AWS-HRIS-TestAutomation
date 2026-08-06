@@ -17,7 +17,7 @@ def go_to_client_page(driver, via="url"):
 
     return ClientPage()
 
-def go_to_school_page(driver, via="url"):
+def go_to_fiscal_year_page(driver, via="url"):
     if via == "url":
         driver.get(f"{BASE_URL}{SCHOOL}")
         # print(f"[Navigation] Navigating to Client Page via URL: {BASE_URL}{CLIENT}")

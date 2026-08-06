@@ -19,8 +19,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # 2. Browser & Navigation Actions
-from components.base_browser import BrowserSetup, ElementActions
-from components.navigation import Session, PageNavigation, KeyboardNavigation
+from components.navigation import PageNavigation, KeyboardNavigation
 from components.elements import ComponentVerifier, FormControls 
 from components.modals import ModalActions, ModalNotifications
 from components.tables import TableActions, TableData, TableSearch, TableSorting, TablePagination

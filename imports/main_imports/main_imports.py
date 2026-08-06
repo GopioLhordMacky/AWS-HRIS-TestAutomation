@@ -39,13 +39,8 @@ from locators.shared.shared_locators import (
 # MAIN COMPONENT IMPORTS
 # ==========================================
 
-from components.base_browser import (
-    BrowserSetup,
-    ElementActions,
-)
 
 from components.navigation import (
-    Session,
     PageNavigation,
     KeyboardNavigation,
 )

@@ -4,44 +4,37 @@ from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
+from components.tables import TableData
+from pages.base_page import BasePage
 
-class ComponentVerifier:
-    @staticmethod
-    def is_component_visible(driver, locator, timeout=10):
+class ComponentVerifier(BasePage):
+
+    def __init__(self, driver):
+        super().__init__(driver)
+
+    def is_component_visible(self, locator):
         try:
-            WebDriverWait(driver, timeout).until(EC.visibility_of_element_located(locator))
+            self.wait.until(EC.visibility_of_element_located(locator))
             return True
         except TimeoutException:
             return False
 
-    @staticmethod
-    def is_component_clickable(driver, locator, timeout=10):
+    def is_component_clickable(self, locator):
         try:
-            WebDriverWait(driver, timeout).until(EC.element_to_be_clickable(locator))
+            self.wait.until(EC.element_to_be_clickable(locator))
             return True
-        except:
+        except Exception:
             return False
 
-    @staticmethod
-    def verify_dropdown_options(driver, dropdown_locator, expected_options, options_locator=None, timeout=5):
-        """
-        Opens a dropdown menu (including native <select>), verifies that all expected options 
-        are present, and closes/resets focus. Supports standard HTML <select> and custom React/MUI components.
-        """
+    def verify_dropdown_options(self, dropdown_locator, expected_options, options_locator=None):
         try:
-            wait = WebDriverWait(driver, timeout)
-            
-            # Step 1: Ensure element is visible/clickable and click to open
-            dropdown_elem = wait.until(EC.element_to_be_clickable(dropdown_locator))
+            dropdown_elem = self.wait.until(EC.element_to_be_clickable(dropdown_locator))
             dropdown_elem.click()
-            time.sleep(0.5)  # Brief delay to visually see the click interaction
+            time.sleep(0.5)
             
-            # Step 2: Handle Native HTML <select> Tag
             if dropdown_elem.tag_name.lower() == "select":
                 select = Select(dropdown_elem)
                 actual_options = [opt.text.strip() for opt in select.options if opt.text.strip()]
-                
-            # Step 3: Handle Custom UI Dropdowns (React / MUI / Custom)
             else:
                 if not options_locator:
                     options_locator = (
@@ -49,21 +42,18 @@ class ComponentVerifier:
                         ".//option | //div[contains(@id, '-option-') or contains(@class, '-option') or @role='option'] | //li[@role='option']"
                     )
 
-                # Look within element first, then fallback globally
                 option_elements = dropdown_elem.find_elements(*options_locator)
                 if not option_elements:
-                    wait.until(EC.presence_of_element_located(options_locator))
-                    option_elements = driver.find_elements(*options_locator)
+                    self.wait.until(EC.presence_of_element_located(options_locator))
+                    option_elements = self.driver.find_elements(*options_locator)
 
                 actual_options = [elem.text.strip() for elem in option_elements if elem.text.strip()]
 
-                # Close custom dropdown by clicking it again
                 try:
                     dropdown_elem.click()
                 except Exception:
                     pass
 
-            # Step 4: Perform case-insensitive comparison
             actual_lower = [opt.lower() for opt in actual_options]
             missing_options = [opt for opt in expected_options if opt.lower() not in actual_lower]
 
@@ -78,22 +68,12 @@ class ComponentVerifier:
 
         except Exception as e:
             print(f"[verify_dropdown_options] Exception encountered: {e}")
-            return False        
-            pass
+            return False
 
-    @staticmethod
-    def verify_input_is_empty(driver, locator, timeout=5):
-        """
-        Verifies whether an input or textarea field is completely empty.
-        """
+    def verify_input_is_empty(self, locator):
         try:
-            wait = WebDriverWait(driver, timeout)
-            element = wait.until(EC.presence_of_element_located(locator))
-
-            # Standard inputs use the 'value' attribute; textareas might fall back to .text
+            element = self.wait.until(EC.presence_of_element_located(locator))
             value = element.get_attribute("value") or element.text
-
-            # Strip whitespace to handle cases where inputs only contain spaces
             is_empty = value.strip() == ""
 
             if not is_empty:
@@ -105,22 +85,14 @@ class ComponentVerifier:
             print(f"[Input Check Exception] {e}")
             return False
 
-    @staticmethod
-    def verify_input_matches(driver, locator, expected_text, timeout=5):
-        """
-        Verifies that an input field, textarea, or react-select dropdown matches an expected text.
-        """
+    def verify_input_matches(self, locator, expected_text):
         try:
-            wait = WebDriverWait(driver, timeout)
-            element = wait.until(EC.presence_of_element_located(locator))
-
-            # Check for react-select value containers (common class structures in react-select)
+            element = self.wait.until(EC.presence_of_element_located(locator))
             react_single_value = element.find_elements(By.XPATH, ".//ancestor::div[contains(@class, 'select__control')]//div[contains(@class, 'select__single-value')]")
             
             if react_single_value:
                 actual_text = react_single_value[0].text.strip()
             else:
-                # Fallback for standard input attributes or textareas
                 actual_text = (element.get_attribute("value") or element.text or "").strip()
 
             matches = actual_text == expected_text.strip()
@@ -134,20 +106,20 @@ class ComponentVerifier:
             print(f"[Input Text Match Exception] {e}")
             return False
 
+class FormControls(BasePage):
 
-class FormControls:
-    @staticmethod
-    def select_custom_dropdown(driver, dropdown_label, option_text):
-        ElementActions.wait_for_and_click(driver, *DropdownLocators.DROPDOWN_CONTAINER_BY_LABEL(dropdown_label))
-        ElementActions.wait_for_and_click(driver, *DropdownLocators.DROPDOWN_OPTION(option_text))
+    def __init__(self, driver):
+        super().__init__(driver)
 
-    @staticmethod
-    def toggle_active_status(driver, row_index, column_name="Active"):
-        col_idx = TableData.get_column_index(driver, column_name)
-        ElementActions.wait_for_and_click(driver, *ToggleSwitchLocators.TOGGLE_BY_ROW_AND_COL(row_index, col_idx))
+    def select_custom_dropdown(self, dropdown_label, option_text):
+        self.wait_for_and_click(*DropdownLocators.DROPDOWN_CONTAINER_BY_LABEL(dropdown_label))
+        self.wait_for_and_click(*DropdownLocators.DROPDOWN_OPTION(option_text))
 
-    @staticmethod
-    def verify_active_toggle_state(driver, row_index, column_name="Active"):
-        col_idx = TableData.get_column_index(driver, column_name)
-        element = driver.find_element(*ToggleSwitchLocators.TOGGLE_BY_ROW_AND_COL(row_index, col_idx))
+    def toggle_active_status(self, row_index, column_name="Active"):
+        col_idx = self.get_column_index(column_name)
+        self.wait_for_and_click(*ToggleSwitchLocators.TOGGLE_BY_ROW_AND_COL(row_index, col_idx))
+
+    def verify_active_toggle_state(self, row_index, column_name="Active"):
+        col_idx = self.get_column_index(column_name)
+        element = self.driver.find_element(*ToggleSwitchLocators.TOGGLE_BY_ROW_AND_COL(row_index, col_idx))
         return element.is_selected()

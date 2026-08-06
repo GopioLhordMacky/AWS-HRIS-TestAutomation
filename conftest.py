@@ -6,6 +6,7 @@ import sys
 from datetime import datetime
 from utils.browser_factory import get_driver
 from utils.auth_helpers import login_and_initial_setup
+from pages.client_page import ClientPage
 from config.config import BASE_URL, VALID_USERNAME, VALID_PASSWORD
 
 # from pages.department_page import DepartmentPage
@@ -32,6 +33,15 @@ def pytest_sessionfinish(session, exitstatus):
         sys.stdout.write(f"{test_name}: {status}\n")
     sys.stdout.flush()
 
+@pytest.fixture
+def client_page(driver):
+    # Pass authenticated driver into the child page class
+    page = ClientPage(driver)
+    page.driver.get(BASE_URL)
+    login_and_initial_setup(driver, VALID_USERNAME, VALID_PASSWORD)
+    return page
+
+    
 @pytest.fixture(scope="function")
 def driver():
     """Starts the browser once for the whole test run."""
@@ -59,6 +69,13 @@ def authenticated_driver(driver_session):
     login_and_initial_setup(driver, VALID_USERNAME, VALID_PASSWORD)
     
     return driver
+
+@pytest.fixture
+def client_page(authenticated_driver):
+    """Passes the authenticated driver into ClientPage and navigates to the Client module."""
+    page = ClientPage(authenticated_driver)
+    page.driver.get("https://test.hris2.awsys-i.com/settings/client")
+    return page
 
 # --- Navigate to Department ---
 # @pytest.fixture(scope="function")

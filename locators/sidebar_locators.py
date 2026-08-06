@@ -15,9 +15,9 @@ class SidebarLocators:
         "//span[contains(@class,'navLinkText')][normalize-space()='Client']"
     )
 
-    SCHOOL_MENU = (
+    FISCAL_YEAR_MENU = (
         By.XPATH,
-        "//span[contains(@class,'navLinkText')][normalize-space()='School']"
+        "//span[contains(@class,'navLinkText')][normalize-space()='Fiscal Year']"
     )
 
 

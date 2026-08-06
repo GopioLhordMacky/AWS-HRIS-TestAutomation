@@ -6,65 +6,37 @@ from data.client_page_inputs import *
 from pages.client_page import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
+from pages.base_page import BasePage
 
-class ClientPage:
-        
-    @staticmethod
-    def login_client_page(driver, url="https://test.hris2.awsys-i.com/login", username="macky-temp.gopio@awsys-i.com", password="Awsys123@"):
-        """Logs in and navigates directly to the Client Page."""
-        Session.login(driver, username, password, url=url)
-        PageNavigation.navigate_to_page(driver, "Client")
+class ClientPage(
+    TableData, 
+    TableActions, 
+    TableSearch, 
+    TablePagination, 
+    ComponentVerifier, 
+    FormControls, 
+    ModalActions,
+    BasePage):
+    
+    def __init__(self, driver):
+        super().__init__(driver)
 
-    def is_client_page_loaded(driver, timeout=15):
-        """Verifies that the Client page header and table are visible."""
-        wait = WebDriverWait(driver, timeout)
-        try:
-            wait.until(EC.visibility_of_element_located(Login_Locators.PAGE_HEADER))
-            return True
-        except TimeoutException:
-            return False
-
-    def click_add_client_button(driver, timeout=10):
+    def click_add_client_button(self, timeout=10):
         """Clicks the primary Add Client button on the page."""
-        wait = WebDriverWait(driver, timeout)
-        btn = wait.until(EC.element_to_be_clickable(Client_Locators.ADD_CLIENT_BUTTON))
-        btn.click()
+        self.wait_for_and_click(Client_Locators.ADD_CLIENT_BUTTON, timeout=timeout)
 
-    def click_edit_button(driver, timeout=10):
+    def click_edit_button(self, timeout=10):
+        """Clicks the Edit button for a row item."""
         try:
-            edit_btn = WebDriverWait(driver, timeout).until(
-                EC.element_to_be_clickable(Row_Actions.EDIT_BUTTON))
-            edit_btn.click()
+            self.wait_for_and_click(Row_Actions.EDIT_BUTTON, timeout=timeout)
             return True
         except Exception as e:
             print(f"[ERROR] Failed to click Edit button: {e}")
             return False
 
-    def get_browser_console_errors(driver):
-        """Fetches severe browser console log errors."""
-        logs = driver.get_log("browser")
-        errors = [entry['message'] for entry in logs if entry['level'] == 'SEVERE']
-        return errors
-
-    def select_react_dropdown(driver, locator, option_text):
-        """Helper to handle React-Select dropdowns by typing and selecting an option.
-        
-        :param locator: Tuple (By, "value") representing the dropdown input element
-        :param option_text: String text of the option to search and select
-        """
-        wait = WebDriverWait(driver, 5)
-        
-        # 1. Accept locator tuple directly instead of forcing By.XPATH
-        dropdown_input = wait.until(EC.presence_of_element_located(locator))
-        
-        # 2. Clear existing text if any, type target text, and press ENTER
-        dropdown_input.send_keys(option_text)
-        time.sleep(2)
-        dropdown_input.send_keys(Keys.ENTER)
-
     def fill_client_form(
-        driver,
-        name=ClientFormData.get_unique_client_name(),
+        self,
+        name=None,
         industry=ClientFormData.VALID_INDUSTRY,
         country=ClientFormData.VALID_COUNTRY,
         contact=ClientFormData.VALID_CONTACT_PERSON,
@@ -72,47 +44,31 @@ class ClientPage:
         phone=ClientFormData.VALID_PHONE,
         address=ClientFormData.VALID_ADDRESS
     ):
-        """Fills out all fields in the Client modal (Add or Update)."""
-
-        wait = WebDriverWait(driver, 10)
+        """Fills out all fields in the Client modal (Add)."""
+        # Resolve dynamic default values at runtime
+        name = name if name is not None else ClientFormData.get_unique_client_name()
 
         # 1. Client Name
-        name_field = wait.until(EC.element_to_be_clickable(Update_Modal_Inputs.CLIENT_NAME_INPUT))
-        name_field.clear()
-        name_field.send_keys(name)
+        self.wait_and_type(Update_Modal_Inputs.CLIENT_NAME_INPUT, name)
 
-        # 2. Dropdowns
+        # 2. Dropdowns (Uses BasePage select method)
         if industry:
-            ClientPage.select_react_dropdown(driver, Update_Modal_Inputs.INDUSTRY_SELECT, industry)
+            self.select_react_dropdown(Update_Modal_Inputs.INDUSTRY_SELECT, industry)
             time.sleep(0.5)
 
         if country:
-            ClientPage.select_react_dropdown(driver, Update_Modal_Inputs.COUNTRY_SELECT, country)
+            self.select_react_dropdown(Update_Modal_Inputs.COUNTRY_SELECT, country)
             time.sleep(0.5)
 
-        # 3. Contact Person
-        contact_field = driver.find_element(*Update_Modal_Inputs.CONTACT_PERSON_INPUT)
-        contact_field.clear()
-        contact_field.send_keys(contact)
-
-        # 4. Email
-        email_field = driver.find_element(*Update_Modal_Inputs.EMAIL_ADDRESS_INPUT)
-        email_field.clear()
-        email_field.send_keys(email)
-
-        # 5. Phone
-        phone_field = driver.find_element(*Update_Modal_Inputs.PHONE_NUMBER_INPUT)
-        phone_field.clear()
-        phone_field.send_keys(phone)
-
-        # 6. Address
-        address_field = driver.find_element(*Update_Modal_Inputs.ADDRESS_INPUT)
-        address_field.clear()
-        address_field.send_keys(address)
+        # 3. Text Inputs
+        self.wait_and_type(Update_Modal_Inputs.CONTACT_PERSON_INPUT, contact)
+        self.wait_and_type(Update_Modal_Inputs.EMAIL_ADDRESS_INPUT, email)
+        self.wait_and_type(Update_Modal_Inputs.PHONE_NUMBER_INPUT, phone)
+        self.wait_and_type(Update_Modal_Inputs.ADDRESS_INPUT, address)
 
     def update_client_form(
-        driver,
-        name=ClientFormData.get_unique_client_name(),
+        self,
+        name=None,
         industry=ClientFormData.VALID_INDUSTRY,
         country=ClientFormData.VALID_COUNTRY,
         contact=ClientFormData.VALID_CONTACT_PERSON,
@@ -120,44 +76,22 @@ class ClientPage:
         phone=ClientFormData.VALID_PHONE,
         address=ClientFormData.VALID_ADDRESS
     ):
-        """Fills out all fields in the Client modal (Add or Update)."""
+        """Fills out fields in the Client modal (Update)."""
+        name = name if name is not None else ClientFormData.get_unique_client_name()
 
-        wait = WebDriverWait(driver, 10)
+        self.wait_and_type(Update_Modal_Inputs.CLIENT_NAME_INPUT, name)
+        self.wait_and_type(Update_Modal_Inputs.CONTACT_PERSON_INPUT, contact)
+        self.wait_and_type(Update_Modal_Inputs.EMAIL_ADDRESS_INPUT, email)
+        self.wait_and_type(Update_Modal_Inputs.PHONE_NUMBER_INPUT, phone)
+        self.wait_and_type(Update_Modal_Inputs.ADDRESS_INPUT, address)
 
-        # 1. Client Name
-        name_field = wait.until(EC.element_to_be_clickable(Update_Modal_Inputs.CLIENT_NAME_INPUT))
-        name_field.clear()
-        name_field.send_keys(name)
+        ModalActions.fill_edit_select_modal(self.driver, "Country", country)
+        ModalActions.fill_edit_select_modal(self.driver, "Industry", industry)
 
-        # 3. Contact Person
-        contact_field = driver.find_element(*Update_Modal_Inputs.CONTACT_PERSON_INPUT)
-        contact_field.clear()
-        contact_field.send_keys(contact)
-
-        # 4. Email
-        email_field = driver.find_element(*Update_Modal_Inputs.EMAIL_ADDRESS_INPUT)
-        email_field.clear()
-        email_field.send_keys(email)
-
-        # 5. Phone
-        phone_field = driver.find_element(*Update_Modal_Inputs.PHONE_NUMBER_INPUT)
-        phone_field.clear()
-        phone_field.send_keys(phone)
-
-        # 6. Address
-        address_field = driver.find_element(*Update_Modal_Inputs.ADDRESS_INPUT)
-        address_field.clear()
-        address_field.send_keys(address)
-
-        ModalActions.fill_edit_select_modal(driver, "Country", country)
-        ModalActions.fill_edit_select_modal(driver, "Industry", industry)
-
-
-    def verify_client_modal_fields_are_empty(driver):
+    def verify_client_modal_fields_are_empty(self):
         """
         Verifies that all input fields and textareas in the Client modal are completely empty.
 
-        :param driver: WebDriver instance
         :return: bool (True if ALL modal fields are empty, False otherwise)
         """
         fields_to_check = [
@@ -171,7 +105,7 @@ class ClientPage:
         ]
 
         for field_name, locator in fields_to_check:
-            if not ComponentVerifier.verify_input_is_empty(driver, locator):
+            if not self.verify_input_is_empty(locator):
                 print(f"[Client Modal Check Failed] '{field_name}' field was expected to be empty, but contained data.")
                 return False
 

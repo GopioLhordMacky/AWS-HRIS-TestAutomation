@@ -30,8 +30,8 @@ class Sidebar(BasePage):
     def click_client_menu(self):
         self.click(Locators.CLIENT_MENU)
 
-    def click_client_menu(self):
-        self.click(Locators.SCHOOL_MENU)
+    def click_fiscal_year_menu(self):
+        self.click(Locators.FISCAL_YEAR_MENU)
 
     def is_item_visible_under_section(self, section_name, item_name):
 

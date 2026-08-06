@@ -5,44 +5,36 @@ from imports.main_imports.main_imports import *
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 import time
+from pages.base_page import BasePage
 
+class PageNavigation(BasePage):
 
-class Session:
-    @staticmethod
-    def login(driver, username, password, url="https://test.hris2.awsys-i.com/employee-list"):
-        if url:
-            driver.get(url)
-        ElementActions.wait_and_type(driver, *LoginLocators.USERNAME_INPUT, text=username)
-        ElementActions.wait_and_type(driver, *LoginLocators.PASSWORD_INPUT, text=password)
-        ElementActions.wait_for_and_click(driver, *LoginLocators.LOGIN_BTN)
-        # return ElementActions.ensure_element_visible(driver, *LoginLocators.USER_AVATAR)
+    def __init__(self, driver):
+        super().__init__(driver)
 
+    def navigate_to_page(self, page_name):
+        self.wait_for_and_click(*LoginLocators.SIDEBAR_MENU_ITEM(page_name))
 
-class PageNavigation:
-    @staticmethod
-    def navigate_to_page(driver, page_name):
-        ElementActions.wait_for_and_click(driver, *LoginLocators.SIDEBAR_MENU_ITEM(page_name))
+    def switch_tab(self, tab_name):
+        self.wait_for_and_click(*TabNavigationLocators.SUB_TAB_BY_NAME(tab_name))
 
-    @staticmethod
-    def switch_tab(driver, tab_name):
-        ElementActions.wait_for_and_click(driver, *TabNavigationLocators.SUB_TAB_BY_NAME(tab_name))
-
-    @staticmethod
-    def switch_view_mode(driver, mode="table"):
+    def switch_view_mode(self, mode="table"):
         if mode.lower() == "table":
-            ElementActions.wait_for_and_click(driver, *ViewModeLocators.TABLE_VIEW_BTN)
+            self.wait_for_and_click(*ViewModeLocators.TABLE_VIEW_BTN)
         elif mode.lower() == "card":
-            ElementActions.wait_for_and_click(driver, *ViewModeLocators.CARD_VIEW_BTN)
+            self.wait_for_and_click(*ViewModeLocators.CARD_VIEW_BTN)
 
 
-class KeyboardNavigation:
-    @staticmethod
-    def tab_navigation(driver, locator, keys=None, helper=None, *helper_args, **helper_kwargs):
+class KeyboardNavigation(BasePage):
+
+    def __init__(self, driver):
+        super().__init__(driver)
+
+    def tab_navigation(self, locator, keys=None, helper=None, *helper_args, **helper_kwargs):
         """
         Navigates to a target element using Tab keystrokes until focused, 
         then executes either a keystroke sequence or a custom helper function.
 
-        :param driver: WebDriver instance
         :param locator: Tuple (By, "value") of the target element to reach via Tab
         :param keys: Optional key or string to send once focused (e.g., Keys.ENTER, "Text", Keys.SPACE)
         :param helper: Optional function/callable to execute after focusing the target element
@@ -51,8 +43,8 @@ class KeyboardNavigation:
         :return: bool (True if navigation and action succeeded, False otherwise)
         """
         try:
-            target_element = driver.find_element(*locator)
-            actions = ActionChains(driver)
+            target_element = self.driver.find_element(*locator)
+            actions = ActionChains(self.driver)
 
             # 1. Tab until the active/focused element matches the target element
             max_tabs = 100
@@ -60,7 +52,7 @@ class KeyboardNavigation:
             focused = False
 
             while tab_count < max_tabs:
-                active_element = driver.switch_to.active_element
+                active_element = self.driver.switch_to.active_element
                 if active_element == target_element:
                     focused = True
                     break
@@ -76,7 +68,11 @@ class KeyboardNavigation:
 
             # 2. Execute custom helper callback if provided
             if helper and callable(helper):
-                helper(driver, *helper_args, **helper_kwargs)
+                # If helper is an instance method that expects driver, pass self.driver, otherwise invoke directly
+                try:
+                    helper(self.driver, *helper_args, **helper_kwargs)
+                except TypeError:
+                    helper(*helper_args, **helper_kwargs)
 
             # 3. Otherwise send specified keys/sequence if provided
             elif keys is not None:
