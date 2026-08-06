@@ -18,20 +18,20 @@ def test_tc_fe_clients_062(authenticated_driver):
     go_to_client_page(driver, via="url")
 
     # Step 1: Perform search to isolate a single page / minimal results
-    search_in_table(driver, "INVALID_!@#123")
+    TableSearch.search_in_table(driver, "INVALID_!@#123")
     time.sleep(2)
 
     # Step 2: Capture initial pagination text
-    initial_pag_info = get_pagination_information(driver)
+    initial_pag_info = TablePagination.get_pagination_information(driver)
 
     # Step 3: Attempt Next navigation
     try:
-        go_to_next_page(driver)
+        TablePagination.go_to_next_page(driver)
         time.sleep(1)
     except Exception:
         pass  # Expected if button is disabled or unclickable
 
-    after_next_info = get_pagination_information(driver)
+    after_next_info = TablePagination.get_pagination_information(driver)
     assert after_next_info == initial_pag_info, (
         f"Pagination state changed after clicking Next on a single page! "
         f"Expected '{initial_pag_info}', got '{after_next_info}'."
@@ -39,15 +39,13 @@ def test_tc_fe_clients_062(authenticated_driver):
 
     # Step 4: Attempt Previous navigation
     try:
-        go_to_prev_page(driver)
+        TablePagination.go_to_prev_page(driver)
         time.sleep(1)
     except Exception:
         pass  # Expected if button is disabled or unclickable
 
-    after_prev_info = get_pagination_information(driver)
+    after_prev_info = TablePagination.get_pagination_information(driver)
     assert after_prev_info == initial_pag_info, (
         f"Pagination state changed after clicking Previous on a single page! "
         f"Expected '{initial_pag_info}', got '{after_prev_info}'."
     )
-
-    close_browser(driver)

@@ -24,16 +24,16 @@ def test_tc_fe_clients_059(authenticated_driver):
 
     # Step 2: Navigate to Last Page by observing text updates
     while True:
-        current_info = get_pagination_information(driver)
+        current_info = TablePagination.get_pagination_information(driver)
         
         try:
-            go_to_next_page(driver)
+            TablePagination.go_to_next_page(driver)
             time.sleep(1.5)
         except Exception:
             # If wait_for_and_click fails because the button became unclickable/disabled, we've hit the end
             break
 
-        updated_info = get_pagination_information(driver)
+        updated_info = TablePagination.get_pagination_information(driver)
 
         # If pagination range text didn't change after clicking, we are on the last page
         if current_info == updated_info:
@@ -44,4 +44,3 @@ def test_tc_fe_clients_059(authenticated_driver):
     assert not next_btn.is_enabled() or next_btn.get_attribute("disabled") is not None, \
         "Next page button should be disabled on the last page!"
 
-    close_browser(driver)

@@ -20,13 +20,13 @@ def test_tc_fe_clients_048(authenticated_driver):
     target_column = "Client Name"
 
     # Step 1: Maximize rows displayed
-    change_rows_per_page(driver, 100)
+    TablePagination.change_rows_per_page(driver, 100)
     time.sleep(1)
 
     # Step 2: Loop through pages
     while True:
         # Check that all cells under 'Client Name' on the current page contain text
-        assert check_column_cells_not_empty(driver, target_column), (
+        assert TableData.check_column_cells_not_empty(driver, target_column), (
             f"Found empty or missing '{target_column}' value on the current page!"
         )
 
@@ -38,7 +38,6 @@ def test_tc_fe_clients_048(authenticated_driver):
             break
 
         # Step 3: Advance to next page using helper
-        go_to_next_page(driver)
+        TablePagination.go_to_next_page(driver)
         time.sleep(3)
 
-    close_browser(driver)

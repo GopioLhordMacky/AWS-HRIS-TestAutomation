@@ -20,7 +20,8 @@ def test_tc_fe_clients_054(authenticated_driver):
     target_col = "Active"
 
     # Step 1: Click the toggle switch
-    toggle_active_status(driver, row_index=target_row, column_name=target_col)
+    FormControls.toggle_active_status(driver, row_index=target_row, column_name=target_col)
+    # FormControls.toggle_active_status(driver, row_index=target_row, column_name=target_col)
 
     # Step 2 & 3: Check visibility of the confirmation controls
     assert ComponentVerifier.is_component_visible(driver, ModalLocators.CONFIRM_BUTTON), \
@@ -30,6 +31,5 @@ def test_tc_fe_clients_054(authenticated_driver):
         "Confirmation dialog's CANCEL button is not visible!"
 
     # Clean up modal view if needed (optional)
-    wait_for_and_click(driver, *ModalLocators.CANCEL_BUTTON)
+    ElementActions.wait_for_and_click(driver, *ModalLocators.CANCEL_BUTTON)
 
-    close_browser(driver)

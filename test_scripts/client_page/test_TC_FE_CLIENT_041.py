@@ -22,10 +22,10 @@ def test_tc_fe_clients_041(authenticated_driver):
     target_row_idx = 3  # 1-based index for row 1
 
     # Step 1: Store initial table row values for counterchecking
-    client_name_col = get_column_index(driver, "Client Name")
-    industry_col = get_column_index(driver, "Industry")
-    country_col = get_column_index(driver, "Country")
-    contact_col = get_column_index(driver, "Contact Person")
+    client_name_col = TableData.get_column_index(driver, "Client Name")
+    industry_col = TableData.get_column_index(driver, "Industry")
+    country_col = TableData.get_column_index(driver, "Country")
+    contact_col = TableData.get_column_index(driver, "Contact Person")
 
     initial_table_data = {
         "client_name": driver.find_element(By.XPATH, f"//tbody/tr[{target_row_idx}]/td[{client_name_col}]").text.strip(),
@@ -35,16 +35,16 @@ def test_tc_fe_clients_041(authenticated_driver):
     }
 
     # Step 2: Open "Update Client" modal
-    click_edit_btn_by_row_index(driver, row_idx=target_row_idx)
+    TableActions.click_edit_btn_by_row_index(driver, row_idx=target_row_idx)
 
     # Step 3: Modify form fields with unsaved changes
-    update_client_form(driver)
+    ClientPage.update_client_form(driver)
 
     # Step 4: Close modal without saving changes
-    click_close(driver)
+    ModalActions.click_close(driver)
 
     # Step 5: Reopen the "Update Client" modal for the exact same record
-    click_edit_btn_by_row_index(driver, row_idx=target_row_idx)
+    TableActions.click_edit_btn_by_row_index(driver, row_idx=target_row_idx)
 
     WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located(Update_Modal_Inputs.MODAL_BODY)
@@ -78,4 +78,4 @@ def test_tc_fe_clients_041(authenticated_driver):
         f"FAILED: Country modified after close! Expected: '{initial_table_data['country']}', Found: '{reopened_country}'"
     )
 
-    close_browser(driver)
+    driver.quit()

@@ -20,10 +20,10 @@ def test_tc_fe_clients_063(authenticated_driver):
     time.sleep(2)
 
     # Step 1: Record initial pagination state on Page 1
-    initial_pag_info = get_pagination_information(driver)
+    initial_pag_info = TablePagination.get_pagination_information(driver)
 
     # Step 2: Navigate via TAB to Next button and trigger with ENTER
-    tab_navigation(
+    KeyboardNavigation.tab_navigation(
         driver, 
         locator=PaginationLocators.NEXT_PAGE_BTN, 
         keys=Keys.ENTER
@@ -31,14 +31,14 @@ def test_tc_fe_clients_063(authenticated_driver):
     time.sleep(1.5)
 
     # Step 3: Verify page advanced
-    next_pag_info = get_pagination_information(driver)
+    next_pag_info = TablePagination.get_pagination_information(driver)
     assert next_pag_info != initial_pag_info, (
         f"Keyboard activation via ENTER failed to advance page! "
         f"Initial: '{initial_pag_info}' | Current: '{next_pag_info}'"
     )
 
     # Step 4: Navigate via TAB to Previous button and trigger with SPACE
-    tab_navigation(
+    KeyboardNavigation.tab_navigation(
         driver, 
         locator=PaginationLocators.PREV_PAGE_BTN, 
         keys=Keys.SPACE
@@ -46,10 +46,9 @@ def test_tc_fe_clients_063(authenticated_driver):
     time.sleep(1.5)
 
     # Step 5: Verify page returned to initial range
-    prev_pag_info = get_pagination_information(driver)
+    prev_pag_info = TablePagination.get_pagination_information(driver)
     assert prev_pag_info == initial_pag_info, (
         f"Keyboard activation via SPACE failed to return to previous page! "
         f"Expected: '{initial_pag_info}' | Got: '{prev_pag_info}'"
     )
 
-    close_browser(driver)

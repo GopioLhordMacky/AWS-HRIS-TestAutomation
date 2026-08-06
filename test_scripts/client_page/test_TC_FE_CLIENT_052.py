@@ -4,7 +4,8 @@ from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
 from utils.navigation_helpers import go_to_client_page
 
-@pytest.mark.passed
+
+@pytest.mark.NameError
 def test_tc_fe_clients_052(authenticated_driver):
     """
     TC_FE_CLIENTS_052: (Functionality) Verify Active toggle default state for Active records
@@ -20,15 +21,14 @@ def test_tc_fe_clients_052(authenticated_driver):
     # filter_by_status(driver, status="Active")
 
     target_column = "Active"
-    change_rows_per_page(driver, 100)  
+    TablePagination.change_rows_per_page(driver, 100)  
     time.sleep(2)  
-    # Get total visible rows on current view
-    col_idx = get_column_index(driver, target_column)
-    row_count = len(driver.find_elements(By.XPATH, f"//tbody/tr/td[{col_idx}]"))
+    # Get total visible rows on current view\
+    col_idx = TableData.get_column_index(driver, target_column)
+    row_count = len(driver.find_elements(By.XPATH, f"//body/tr/td[{col_idx}]"))
 
-    # Step 1 & 2: Check each row to confirm the toggle state is active/ON
     for row_idx in range(1, row_count + 1):
-        is_active = verify_active_toggle_state(driver, row_index=row_idx, column_name=target_column)
-        assert is_active, f"Expected Active toggle to be ON for row {row_idx}, but found OFF."
+        is_active = FormControls.verify_active_toggle_state(driver, row_index=row_idx, column_name=target_column)
+        assert is_active, f"Expected Active toggle to be ACTIVE for row {row_idx}, but found INACTIVE"
 
-    close_browser(driver)
+

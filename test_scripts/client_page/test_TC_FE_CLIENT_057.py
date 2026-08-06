@@ -22,7 +22,7 @@ def test_tc_fe_clients_057(authenticated_driver):
         "Rows per page dropdown is not visible!"
 
     # 2. Assert Pagination Range Information text visibility & non-emptiness
-    pag_info = get_pagination_information(driver)
+    pag_info = TablePagination.get_pagination_information(driver)
     assert pag_info is not None and len(pag_info) > 0, \
         f"Pagination information text is missing or empty! Got: '{pag_info}'"
 
@@ -34,4 +34,3 @@ def test_tc_fe_clients_057(authenticated_driver):
     assert ComponentVerifier.is_component_visible(driver, PaginationLocators.PREV_PAGE_BTN), \
         "Previous page button is not visible!"
 
-    close_browser(driver)

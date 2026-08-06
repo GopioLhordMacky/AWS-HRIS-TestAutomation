@@ -22,16 +22,16 @@ def test_tc_fe_clients_040(authenticated_driver):
     time.sleep(2)
 
     # Step 1: Open Update Modal for the target row
-    click_edit_btn_by_row_index(driver, row_idx=target_row_idx)
+    TableActions.click_edit_btn_by_row_index(driver, row_idx=target_row_idx)
 
     # Step 2: Fill form with new valid data and capture generated/updated client name
-    update_client_form(driver, name=name_update)
+    ClientPage.update_client_form(driver, name=name_update)
 
     # Step 3: Save changes
-    click_save_only(driver)
+    ModalActions.click_save_only(driver)
 
     # Step 4: Verify error message confirmation
-    assert check_error_message(driver, expected_text="Cannot update: A client with this name already exists"), \
+    assert ModalNotifications.check_error_message(driver, expected_text="Cannot update: A client with this name already exists"), \
         "Expected error message was not displayed or did not match expected text."
 
-    close_browser(driver)
+    driver.quit()

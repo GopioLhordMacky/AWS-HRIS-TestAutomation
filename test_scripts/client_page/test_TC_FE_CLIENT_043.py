@@ -11,19 +11,19 @@ def test_tc_fe_clients_043(authenticated_driver):
     go_to_client_page(driver, via="url")
 
     # Step 1: Open the "Add Client" modal
-    click_edit_btn_by_row_index(driver, row_idx=1)
+    TableActions.click_edit_btn_by_row_index(driver, row_idx=1)
 
     # Expected list of Industry options from test data
     expected_industries = Options.industry_options
 
     # Step 2: Verify the dropdown options list matches expected options
-    assert verify_dropdown_options(
+    assert ComponentVerifier.verify_dropdown_options(
         driver,
         Update_Modal_Inputs.INDUSTRY_SELECT,
         expected_industries
     ), "Industry dropdown options do not match expected list."
 
     # Step 4: Close the modal using click_close
-    click_close(driver)
+    ModalActions.click_close(driver)
 
-    close_browser(driver)
+    driver.quit()

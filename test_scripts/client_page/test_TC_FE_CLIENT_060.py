@@ -20,11 +20,11 @@ def test_tc_fe_clients_060(authenticated_driver):
 
     # Step 2: Iterate through options and verify table updates dynamically
     for count in expected_counts:
-        change_rows_per_page(driver, count)
+        TablePagination.change_rows_per_page(driver, count)
         time.sleep(1.5)
 
         # Get updated pagination text and visible row count
-        updated_pag_info = get_pagination_information(driver)
+        updated_pag_info = TablePagination.get_pagination_information(driver)
         visible_rows = len(driver.find_elements(By.XPATH, "//tbody/tr"))
 
         # Assertions
@@ -35,4 +35,3 @@ def test_tc_fe_clients_060(authenticated_driver):
             f"Pagination info is empty after setting rows per page to {count}!"
         )
 
-    close_browser(driver)

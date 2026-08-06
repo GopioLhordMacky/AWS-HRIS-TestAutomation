@@ -20,9 +20,9 @@ def test_tc_fe_clients_048(authenticated_driver):
     column_to_sort = "Client Name"
 
     # Step 1: Change rows per page to 100
-    change_rows_per_page(driver, 100)
+    TablePagination.change_rows_per_page(driver, 100)
 
     # Step 2 & 3: Trigger sort and verify ascending order
-    verify_column_sorting(driver, column_to_sort, order="ascending")
+    TableSorting.verify_column_sorting(driver, column_to_sort, order="ascending")
 
-    close_browser(driver)
+    driver.quit()
