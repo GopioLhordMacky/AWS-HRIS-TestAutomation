@@ -23,11 +23,12 @@ class SearchLocators:
 
 class DropdownLocators:
     DROPDOWN_CONTAINER_BY_LABEL = lambda label: (By.XPATH, f"//span[text()='{label}'] | //label[text()='Status']")
+    # (By.XPATH, f"//div[contains(@class, 'modal-content')]//label[text()='{label_name}']/following::div[contains(@class, '-singleValue')][1]")
     # DROPDOWN_OPTION = lambda option_text: (By.XPATH, f"//select[@name ='{option_text}']")
     DROPDOWN_OPTION = lambda option_text: (By.XPATH, f"//option[normalize-space(text())='{option_text}'] | //li[normalize-space(text())='{option_text}']")
 
 class PaginationLocators:
-    ROWS_PER_PAGE_DROPDOWN = (By.XPATH, "//div[contains(@class, 'MuiTablePagination-select') or contains(@class, 'MuiSelect-select')]")   
+    ROWS_PER_PAGE_DROPDOWN = (By.XPATH, "//div[contains(@class, 'MuiTablePagination-select')]")   
     ROWS_PER_PAGE_OPTION = lambda count: (By.XPATH, f"//li[contains(@class, 'MuiMenuItem-root') and (normalize-space(text())='{count}' or @data-value='{count}')]")    
     NEXT_PAGE_BTN = (By.XPATH, "//button[contains(translate(@aria-label, 'NEXT', 'next'), 'next page') or contains(@class, 'next') or .//*[contains(@data-testid, 'KeyboardArrowRight')]]")
     PREV_PAGE_BTN = (By.XPATH, "//button[contains(translate(@aria-label, 'PREVIOUS', 'previous'), 'previous page') or contains(@class, 'previous') or .//*[contains(@data-testid, 'KeyboardArrowLeft')]]")

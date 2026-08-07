@@ -37,7 +37,8 @@ class Update_Modal_Controls:
 class Update_Modal_Inputs:
     MODAL_BODY = (By.XPATH, "//div[@class = 'modal-body']")
     CLIENT_NAME_INPUT = (By.XPATH, "//div[contains(@class, 'modal-content')]//input[@name='name']")
-    INDUSTRY_SELECT = (By.XPATH, "//div[contains(@class, 'modal-content')]//input[contains(@id, 'react-select') and contains(@aria-describedby, 'placeholder')]")
+    # INDUSTRY_SELECT = (By.XPATH, "//div[contains(@class, 'modal-content')]//div[contains(text(), 'Industry') and contains(@aria-describedby, 'placeholder')]")
+    INDUSTRY_SELECT = (By.XPATH, "//div[contains(@class, 'modal-content')]//label[text()='Industry']/following::input[contains(@id, 'react-select')][1]")
     COUNTRY_SELECT = (By.XPATH, "//div[contains(@class, 'modal-content')]//label[text()='Country']/following::input[contains(@id, 'react-select')][1]")
     CONTACT_PERSON_INPUT = (By.XPATH, "//div[contains(@class, 'modal-content')]//input[@name='contactPerson']")
     EMAIL_ADDRESS_INPUT = (By.XPATH, "//div[contains(@class, 'modal-content')]//input[@name='emailAddress']")

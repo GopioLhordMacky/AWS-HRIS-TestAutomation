@@ -7,32 +7,79 @@ from pages.client_page import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
 from pages.base_page import BasePage
+from components.tables import Table
+from components.elements import Element
 
-class ClientPage(
-    TableData, 
-    TableActions, 
-    TableSearch, 
-    TablePagination, 
-    ComponentVerifier, 
-    FormControls, 
-    ModalActions,
-    BasePage):
+class ClientPage(BasePage):
     
     def __init__(self, driver):
-        super().__init__(driver)
+        super().__init__(driver) 
+        self.table = Table(driver)   
+        self.element = Element(driver)           
+        self.navigation = Navigation(driver)
 
-    def click_add_client_button(self, timeout=10):
+    def click_add_client_button(self):
         """Clicks the primary Add Client button on the page."""
-        self.wait_for_and_click(Client_Locators.ADD_CLIENT_BUTTON, timeout=timeout)
+        self.wait_for_and_click(Client_Locators.ADD_CLIENT_BUTTON)
 
-    def click_edit_button(self, timeout=10):
+    def click_edit_button(self):
         """Clicks the Edit button for a row item."""
         try:
-            self.wait_for_and_click(Row_Actions.EDIT_BUTTON, timeout=timeout)
+            self.wait_for_and_click(Row_Actions.EDIT_BUTTON)
             return True
         except Exception as e:
             print(f"[ERROR] Failed to click Edit button: {e}")
             return False
+
+    def is_client_modal_inputs_visible(self):
+        return all ([
+            self.element.is_component_visible(Update_Modal_Inputs.CLIENT_NAME_INPUT),
+            self.element.is_component_visible(Update_Modal_Inputs.INDUSTRY_SELECT),
+            self.element.is_component_visible(Update_Modal_Inputs.COUNTRY_SELECT),
+            self.element.is_component_visible(Update_Modal_Inputs.CONTACT_PERSON_INPUT)
+        ])
+       
+
+    def is_client_modal_visible(self):
+        return self.element.is_component_visible(Update_Modal_Inputs.MODAL_BODY)
+    
+    def get_table_headers_client(self):
+        return self.table.get_table_headers()
+
+    def ensure_element_visible(self, locator):
+        """
+        Waits until an element is visible in the DOM and returns it.
+        Uses the instance's standard explicit wait engine (self.wait).
+
+        """
+        return self.wait.until(EC.visibility_of_element_located(locator))
+
+    def select_react_dropdown(self, locator, option_text):
+        """
+        Handles React-Select and modern custom dropdowns by typing and selecting an option.
+        
+        :param locator: Tuple (By, value) representing the dropdown input element
+        :param option_text: String text of the option to search and select
+        """
+        try:
+            # 1. Wait until the input element is ready to accept interaction
+            dropdown_input = self.wait.until(EC.element_to_be_clickable(locator))
+            
+            # 2. Click to open/focus, clear existing text, and type search string
+            dropdown_input.click()
+            dropdown_input.send_keys(Keys.CONTROL + "a")
+            dropdown_input.send_keys(Keys.BACKSPACE)
+            dropdown_input.send_keys(option_text)
+            
+            # 3. Wait for option container or menu item to appear, then select
+            self.wait.until(
+                EC.presence_of_element_located((By.XPATH, f"//*[contains(text(), '{option_text}')]"))
+            )
+            dropdown_input.send_keys(Keys.ENTER)
+            
+        except TimeoutException:
+            print(f"Failed to locate or select option '{option_text}' in React dropdown {locator}")
+            raise
 
     def fill_client_form(
         self,
@@ -85,8 +132,8 @@ class ClientPage(
         self.wait_and_type(Update_Modal_Inputs.PHONE_NUMBER_INPUT, phone)
         self.wait_and_type(Update_Modal_Inputs.ADDRESS_INPUT, address)
 
-        ModalActions.fill_edit_select_modal(self.driver, "Country", country)
-        ModalActions.fill_edit_select_modal(self.driver, "Industry", industry)
+        self.fill_edit_select_modal("Country", country)
+        self.fill_edit_select_modal("Industry", industry)
 
     def verify_client_modal_fields_are_empty(self):
         """

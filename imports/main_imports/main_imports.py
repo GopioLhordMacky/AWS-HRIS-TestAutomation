@@ -41,24 +41,17 @@ from locators.shared.shared_locators import (
 
 
 from components.navigation import (
-    PageNavigation,
-    KeyboardNavigation,
+    Navigation
 )
 
 from components.elements import (
-    ComponentVerifier,
-    FormControls,
+    Element
 )
 
 from components.modals import (
-    ModalActions,
-    ModalNotifications,
+    Modals
 )
 
 from components.tables import (
-    TableData,
-    TableActions,
-    TableSearch,
-    TableSorting,
-    TablePagination,
+    Table
 )

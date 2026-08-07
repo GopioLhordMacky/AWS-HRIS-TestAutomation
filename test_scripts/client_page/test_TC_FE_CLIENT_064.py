@@ -2,10 +2,10 @@ from pages.client_page import *
 from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
-from utils.navigation_helpers import go_to_client_page
+
 
 @pytest.mark.ongoing
-def test_tc_fe_clients_064(authenticated_driver):
+def test_tc_fe_clients_064(client_page):
     """
     TC_FE_CLIENTS_064: (Functionality) Verify Input Fields Accept a Maximum of 255 Characters Only
     
@@ -14,11 +14,11 @@ def test_tc_fe_clients_064(authenticated_driver):
     3. Click save_only.
     4. Verify that an error message is observed using check_error_message.
     """
-    driver = authenticated_driver
-    go_to_client_page(driver, via="url")
+    page = client_page
+
 
     # Step 1: Open Add Client Modal
-    ClientPage.click_add_client_button(driver, timeout=10)
+    page.click_add_client_button(  )
     time.sleep(1)
 
     # Prepare string exceeding 255 characters (256 chars)
@@ -26,8 +26,8 @@ def test_tc_fe_clients_064(authenticated_driver):
     client_name = ClientFormData.get_unique_client_name(prefix = invalid_256_char_string)  # Generate a unique client name for testing
 
     # Step 2: Fill client form with 256-character string
-    ClientPage.fill_client_form(
-        driver,
+    page.fill_client_form(
+         
         name=client_name,
         industry=ClientFormData.VALID_INDUSTRY,
         country=ClientFormData.VALID_COUNTRY,
@@ -38,11 +38,11 @@ def test_tc_fe_clients_064(authenticated_driver):
     )
 
     # Step 3: Trigger form save
-    ModalActions.click_save_confirm (driver)
+    page.click_save_confirm ()
     time.sleep(1)
 
     # Step 1: Open Add Client Modal
-    ClientPage.click_add_client_button(driver, timeout=10)
+    page.click_add_client_button(  )
     time.sleep(1)
 
     # Prepare string exceeding 255 characters (256 chars)
@@ -50,8 +50,8 @@ def test_tc_fe_clients_064(authenticated_driver):
     client_name = ClientFormData.get_unique_client_name(prefix = invalid_256_char_string)  # Generate a unique client name for testing
 
     # Step 2: Fill client form with 256-character string
-    ClientPage.fill_client_form(
-        driver,
+    page.fill_client_form(
+         
         name=client_name,
         industry=ClientFormData.VALID_INDUSTRY,
         country=ClientFormData.VALID_COUNTRY,
@@ -62,11 +62,11 @@ def test_tc_fe_clients_064(authenticated_driver):
     )
 
     # Step 3: Trigger form save
-    ModalActions.click_save_only(driver)
+    page.click_save_only()
     time.sleep(1)
 
     # Step 4: Verify validation error message appears
-    assert ModalNotifications.check_error_message(driver, timeout=5), (
+    assert page.check_error_message(  ), (
         "Expected validation error message after submitting input exceeding 255 characters, but none was observed!"
     )
 

@@ -7,7 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 from pages.base_page import BasePage
 
-class PageNavigation(BasePage):
+class Navigation(BasePage):
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -23,12 +23,6 @@ class PageNavigation(BasePage):
             self.wait_for_and_click(*ViewModeLocators.TABLE_VIEW_BTN)
         elif mode.lower() == "card":
             self.wait_for_and_click(*ViewModeLocators.CARD_VIEW_BTN)
-
-
-class KeyboardNavigation(BasePage):
-
-    def __init__(self, driver):
-        super().__init__(driver)
 
     def tab_navigation(self, locator, keys=None, helper=None, *helper_args, **helper_kwargs):
         """

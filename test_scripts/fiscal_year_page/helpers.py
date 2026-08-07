@@ -12,20 +12,20 @@ from Fiscal_Year_Page.locators import Login_Locators, Sidebar_Locators, Buttons,
 
 @pytest.fixture
 def setup_browser():
-    """Fixture that initializes the driver, loads the page, and cleans up."""
+    """Fixture that initializes the   loads the page, and cleans up."""
     service = Service(executable_path="chromedriver.exe")
     driver = webdriver.Chrome(service=service)
     driver.maximize_window()
     driver.get('https://staging.hris2.awsys-i.com/settings/fiscal-year')
 
     yield driver
-    driver.quit()
+    
 
 
 def login_helper(driver):
     username = "macky-temp.gopio@awsys-i.com"
     password = "Awsys123@"
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     
     username_field = wait.until(EC.presence_of_element_located((By.XPATH, Login_Locators.USERNAME_FIELD)))
     username_field.send_keys(username)
@@ -43,28 +43,28 @@ def login_helper(driver):
 
 
 def save_btn(driver):
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     save_button = wait.until(EC.element_to_be_clickable((By.XPATH, Buttons.SAVE_BUTTON)))
     save_button.click()
 
 
 def close_btn(driver):
     """Closes modal via the 'Close' button."""
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     close_button = wait.until(EC.element_to_be_clickable((By.XPATH, Buttons.CLOSE_BUTTON)))
     close_button.click()
 
 
 def close_by_x_btn(driver):
     """Closes modal via the 'X' icon in the header."""
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     x_btn = wait.until(EC.element_to_be_clickable((By.XPATH, Buttons.X_BUTTON)))
     x_btn.click()
 
 # THIS METHOD IS NOT WORKING DUE TO DIRTY XPATH
 def close_by_backdrop(driver):
     """Closes modal by clicking outside the modal dialog overlay."""
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     # Target the modal backdrop overlay element or clicking top-left corner outside dialog content
     backdrop = wait.until(
         EC.presence_of_element_located((
@@ -75,15 +75,15 @@ def close_by_backdrop(driver):
     backdrop.click()
 
 def open_add_fiscal_year_modal(driver):
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     add_btn = wait.until(EC.element_to_be_clickable((By.XPATH, Buttons.ADD_FISCAL_YEAR_BUTTON)))
     add_btn.click()
     wait.until(EC.visibility_of_element_located((By.XPATH, "//div[contains(@class, 'modal-title') or contains(text(), 'Add Fiscal Year')]")))
 
 
-def fill_start_date(driver, date_str="05-2051"):
+def fill_start_date(  date_str="05-2051"):
     """Fills the Start Date field using React's native value setter to guarantee state update."""
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     start_input = wait.until(EC.presence_of_element_located((By.XPATH, Options.START_DATE)))
     
     driver.execute_script("""
@@ -96,9 +96,9 @@ def fill_start_date(driver, date_str="05-2051"):
 
     return date_str
 
-def update_start_date(driver, date_str="05-2072"):
+def update_start_date(  date_str="05-2072"):
     """Fills the Start Date field using React's native value setter to guarantee state update."""
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     start_input = wait.until(EC.presence_of_element_located((By.XPATH, Options.START_DATE)))
     
     driver.execute_script("""
@@ -111,39 +111,39 @@ def update_start_date(driver, date_str="05-2072"):
     
     return date_str  
 
-def filter_by_status(driver, status_text="Inactive"):
-    wait = WebDriverWait(driver, 10)
+def filter_by_status(  status_text="Inactive"):
+    wait = WebDriverWait(  10)
     dropdown_element = wait.until(EC.element_to_be_clickable((By.XPATH, Options.STATUS_DROPDOWN)))
     dropdown = Select(dropdown_element)
     dropdown.select_by_visible_text(status_text)
 
 def select_status_active(driver):
     """Selects 'Active' from the Status dropdown."""
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     dropdown_el = wait.until(EC.element_to_be_clickable((By.XPATH, Options.STATUS_DROPDOWN)))
     select = Select(dropdown_el)
     select.select_by_visible_text("Active")
 
 def select_status_inactive(driver):
     """Selects 'Inactive' from the Status dropdown."""
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     dropdown_el = wait.until(EC.element_to_be_clickable((By.XPATH, Options.STATUS_DROPDOWN)))
     select = Select(dropdown_el)
     select.select_by_visible_text("Inactive")
 
 def verify_table_data_present(driver):
     """Waits for table rows to be present and returns the entire text content of tbody."""
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     wait.until(EC.presence_of_all_elements_located((By.XPATH, Table.TABLE_ROWS)))
     return driver.find_element(By.XPATH, Table.BODY).text
 
-def verify_table_search_results(driver, search_input_xpath=Options.SEARCH_FIELD):
+def verify_table_search_results(  search_input_xpath=Options.SEARCH_FIELD):
     """
     Dynamically waits for table updates after a search operation.
     Validates that either the empty state message appears or all displayed rows 
     contain the query typed in the search field.
     """
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     
     # 1. Dynamically retrieve the current search term from the input field
     search_input_el = wait.until(EC.element_to_be_clickable((By.XPATH, search_input_xpath)))
@@ -170,19 +170,19 @@ def verify_table_search_results(driver, search_input_xpath=Options.SEARCH_FIELD)
                 f"Row text '{row.text}' did not contain expected search term '{current_search_term}'."
             )
 
-def select_status(driver, status="Active"):
+def select_status(  status="Active"):
     """
     Selects a status from the Status dropdown.
     Accepts 'Active', 'Inactive', or any valid option text.
     """
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     dropdown_el = wait.until(EC.element_to_be_clickable((By.XPATH, Options.STATUS_DROPDOWN)))
     select = Select(dropdown_el)
     select.select_by_visible_text(status)
 
-def fill_search_field(driver, search_str="2030"):
+def fill_search_field(  search_str="2030"):
     """Clears the search input and fills it with the provided query string."""
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     search_input = wait.until(EC.element_to_be_clickable((By.XPATH, Options.SEARCH_FIELD)))
     
     # Select all and backspace to clear reliably in React
@@ -193,7 +193,7 @@ def fill_search_field(driver, search_str="2030"):
         search_input.send_keys(search_str)
 
 def click_edit_fiscal_year (driver):
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
     wait.until(EC.presence_of_all_elements_located((By.XPATH, Table.TABLE_ROWS)))
     rows = driver.find_elements(By.XPATH, Table.TABLE_ROWS)
     assert len(rows) >= 1, "Expected at least 1 row in the table to perform update."
@@ -204,7 +204,7 @@ def click_edit_fiscal_year (driver):
     edit_button.click()
 
 def toggle_click (driver):
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(  10)
 
     # Wait for table rows to load and get initial count
     wait.until(EC.presence_of_all_elements_located((By.XPATH, Table.TABLE_ROWS)))

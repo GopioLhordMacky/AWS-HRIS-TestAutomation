@@ -4,10 +4,10 @@ from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
-from components.tables import TableData
+from components.tables import Table
 from pages.base_page import BasePage
 
-class ComponentVerifier(BasePage):
+class Element(BasePage):
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -106,18 +106,13 @@ class ComponentVerifier(BasePage):
             print(f"[Input Text Match Exception] {e}")
             return False
 
-class FormControls(BasePage):
-
-    def __init__(self, driver):
-        super().__init__(driver)
-
     def select_custom_dropdown(self, dropdown_label, option_text):
-        self.wait_for_and_click(*DropdownLocators.DROPDOWN_CONTAINER_BY_LABEL(dropdown_label))
-        self.wait_for_and_click(*DropdownLocators.DROPDOWN_OPTION(option_text))
+        self.wait_for_and_click(DropdownLocators.DROPDOWN_CONTAINER_BY_LABEL(dropdown_label))
+        self.wait_for_and_click(DropdownLocators.DROPDOWN_OPTION(option_text))
 
     def toggle_active_status(self, row_index, column_name="Active"):
         col_idx = self.get_column_index(column_name)
-        self.wait_for_and_click(*ToggleSwitchLocators.TOGGLE_BY_ROW_AND_COL(row_index, col_idx))
+        self.wait_for_and_click(ToggleSwitchLocators.TOGGLE_BY_ROW_AND_COL(row_index, col_idx))
 
     def verify_active_toggle_state(self, row_index, column_name="Active"):
         col_idx = self.get_column_index(column_name)

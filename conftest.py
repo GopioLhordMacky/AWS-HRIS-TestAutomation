@@ -33,13 +33,13 @@ def pytest_sessionfinish(session, exitstatus):
         sys.stdout.write(f"{test_name}: {status}\n")
     sys.stdout.flush()
 
-@pytest.fixture
-def client_page(driver):
-    # Pass authenticated driver into the child page class
-    page = ClientPage(driver)
-    page.driver.get(BASE_URL)
-    login_and_initial_setup(driver, VALID_USERNAME, VALID_PASSWORD)
-    return page
+# @pytest.fixture
+# def client_page(driver):
+#     # Pass authenticated driver into the child page class
+#     page = ClientPage(driver)
+#     page.driver.get(BASE_URL)
+#     login_and_initial_setup(driver, VALID_USERNAME, VALID_PASSWORD)
+#     return page
 
     
 @pytest.fixture(scope="function")
@@ -52,30 +52,28 @@ def driver():
 
 @pytest.fixture(scope="session")
 def driver_session():
-    """Starts the browser once for the whole test run."""
+    """Starts ONE browser window for the ENTIRE test folder run."""
     _driver = get_driver()
     _driver.maximize_window()
     yield _driver
-    _driver.quit()
+    _driver.quit()  # Quits ONLY after ALL tests in the folder finish
 
 # --- LAYER 2: The Authentication ---
 @pytest.fixture(scope="session")
 def authenticated_driver(driver_session):
-    """Logs in ONCE and ensures the Dashboard is ready."""
+    """Logs in ONCE at the start of the test run."""
     driver = driver_session
     driver.get(BASE_URL)
-    
-    # Use the helper we discussed to Login + Wait for Dashboard
     login_and_initial_setup(driver, VALID_USERNAME, VALID_PASSWORD)
-    
     return driver
 
-@pytest.fixture
-def client_page(authenticated_driver):
-    """Passes the authenticated driver into ClientPage and navigates to the Client module."""
-    page = ClientPage(authenticated_driver)
-    page.driver.get("https://test.hris2.awsys-i.com/settings/client")
-    return page
+# @pytest.fixture(scope="function")
+# def client_page(authenticated_driver):
+#     """Navigates to the module before each test using the shared browser session."""
+#     page = ClientPage(authenticated_driver)
+#     page.driver.get("https://test.hris2.awsys-i.com/settings/client")
+#     yield page
+#     # DO NOT put page.driver.quit() here!
 
 # --- Navigate to Department ---
 # @pytest.fixture(scope="function")

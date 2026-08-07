@@ -2,46 +2,46 @@ from pages.client_page import *
 from locators.client_page_locators import *
 from imports.main_imports.main_imports import *
 from imports.client_page_imports import *
-from utils.navigation_helpers import go_to_client_page
 
-@pytest.mark.passed
-def test_tc_fe_clients_018(authenticated_driver):
+
+
+def test_tc_fe_clients_018(client_page):
     """Verify 'Add Client' Modal Closes When Clicking Outside of the Modal."""
-    driver = authenticated_driver
-    go_to_client_page(driver, via="url")
+    page = client_page
+
 
     # Step 1: Open the "Add Client" modal
-    ClientPage.click_add_client_button(driver)
+    page.click_add_client_button()
     
     # Fill out the form to test that entered data is not persisted
-    ClientPage.fill_client_form(driver)
+    page.fill_client_form()
 
     # Step 2: Click outside the modal to close it
-    ModalActions.click_outside_modal(driver)
+    page.click_outside_modal()
 
     # Verification: Reopen the modal and verify all fields are cleared (data was not saved)
-    ClientPage.click_add_client_button(driver)
-    assert ClientPage.verify_client_modal_fields_are_empty(driver), "Expected modal fields to be empty/cleared after closing via outside click, but data persisted."
+    page.click_add_client_button()
+    assert page.verify_client_modal_fields_are_empty(), "Expected modal fields to be empty/cleared after closing via outside click, but data persisted."
 
-    # assert ComponentVerifier.verify_input_is_empty(driver, Update_Modal_Inputs.CLIENT_NAME) , \
+    # assert page.verify_input_is_empty(  Update_Modal_Inputs.CLIENT_NAME) , \
     #     "Expected modal fields to be empty/cleared after closing via outside click, but data persisted."
 
-    # assert ComponentVerifier.verify_input_is_empty(driver, Update_Modal_Inputs.INDUSTRY_SELECT) , \
+    # assert page.verify_input_is_empty(  Update_Modal_Inputs.INDUSTRY_SELECT) , \
     #     "Expected modal fields to be empty/cleared after closing via outside click, but data persisted."
 
-    # assert ComponentVerifier.verify_input_is_empty(driver, Update_Modal_Inputs.COUNTRY_SELECT) , \
+    # assert page.verify_input_is_empty(  Update_Modal_Inputs.COUNTRY_SELECT) , \
     #     "Expected modal fields to be empty/cleared after closing via outside click, but data persisted."
 
-    # assert ComponentVerifier.verify_input_is_empty(driver, Update_Modal_Inputs.CONTACT_PERSON_INPUT) , \
+    # assert page.verify_input_is_empty(  Update_Modal_Inputs.CONTACT_PERSON_INPUT) , \
     #     "Expected modal fields to be empty/cleared after closing via outside click, but data persisted."
 
-    # assert ComponentVerifier.verify_input_is_empty(driver, Update_Modal_Inputs.EMAIL_ADDRESS_INPUT) , \
+    # assert page.verify_input_is_empty(  Update_Modal_Inputs.EMAIL_ADDRESS_INPUT) , \
     #     "Expected modal fields to be empty/cleared after closing via outside click, but data persisted." 
 
-    # assert ComponentVerifier.verify_input_is_empty(driver, Update_Modal_Inputs.PHONE_NUMBER_INPUT) , \
+    # assert page.verify_input_is_empty(  Update_Modal_Inputs.PHONE_NUMBER_INPUT) , \
     #     "Expected modal fields to be empty/cleared after closing via outside click, but data persisted."
 
-    # assert ComponentVerifier.verify_input_is_empty(driver, Update_Modal_Inputs.ADDRESS_INPUT) , \
+    # assert page.verify_input_is_empty(  Update_Modal_Inputs.ADDRESS_INPUT) , \
     #     "Expected modal fields to be empty/cleared after closing via outside click, but data persisted."
 
-    driver.quit()
+    

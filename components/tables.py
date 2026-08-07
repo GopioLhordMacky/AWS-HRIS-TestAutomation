@@ -5,7 +5,7 @@ from locators.shared.shared_locators import TreeTableLocators
 from imports.main_imports.main_imports import *
 from pages.base_page import BasePage
 
-class TableData(BasePage):
+class Table(BasePage):
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -57,27 +57,22 @@ class TableData(BasePage):
         return True
 
     def expand_tree_row(self, row_index):
-        self.wait_for_and_click(*TreeTableLocators.EXPAND_CARET_BY_ROW(row_index))
-
-class TableActions(BasePage):
-
-    def __init__(self, driver):
-        super().__init__(driver)
+        self.wait_for_and_click(TreeTableLocators.EXPAND_CARET_BY_ROW(row_index))
 
     def click_edit_btn(self, target):
         if isinstance(target, int):
-            self.wait_for_and_click(*CommonTableLocators.EDIT_BTN_BY_INDEX(target))
+            self.wait_for_and_click(CommonTableLocators.EDIT_BTN_BY_INDEX(target))
         else:
-            self.wait_for_and_click(*CommonTableLocators.EDIT_BTN_BY_VALUE(str(target)))
+            self.wait_for_and_click(CommonTableLocators.EDIT_BTN_BY_VALUE(str(target)))
 
     def click_edit_btn_by_row_index(self, row_idx=1):
         locator = CommonTableLocators.EDIT_BTN_BY_INDEX(row_idx)
-        self.wait_for_and_click(*locator)
+        self.wait_for_and_click(locator)
 
     def click_edit_btn_by_column_value(self, column_name, text):
         col_idx = self.get_column_index(column_name)
         locator = CommonTableLocators.EDIT_BTN_BY_COLUMN_VALUE(col_idx, text)
-        self.wait_for_and_click(*locator)
+        self.wait_for_and_click(locator)
 
     def check_toggle_status_on_table(self, column_name, text):
         """
@@ -119,14 +114,9 @@ class TableActions(BasePage):
             print(f"[check_table_toggle_data_by_dropdown] Exception: {e}")
             return False
 
-class TableSearch(BasePage):
-
-    def __init__(self, driver):
-        super().__init__(driver)
-
     def search_in_table(self, search_term):
-        search_enter = self.wait_and_type(*SearchLocators.GLOBAL_SEARCH_INPUT, text=search_term)
-        search_enter.send_keys(Keys.ENTER)
+        search_enter = self.wait_and_type(SearchLocators.GLOBAL_SEARCH_INPUT, text=search_term)
+        # search_enter.send_keys(Keys.ENTER)
 
     def check_table_data_by_search(self, column_name, text):
         """Filters the table using the search bar, expands rows per page to 100, 
@@ -139,7 +129,7 @@ class TableSearch(BasePage):
         try:
             # 1. Refresh page at the start
             self.driver.refresh()
-            time.sleep(1)
+            time.sleep(2)
 
             # 2. Set rows per page to 100 to ensure all filtered results are visible
             self.change_rows_per_page(100)
@@ -281,13 +271,9 @@ class TableSearch(BasePage):
             print(f"[ERROR] Failed to locate or verify empty table body: {e}")
             return False
 
-class TableSorting(BasePage):
-
-    def __init__(self, driver):
-        super().__init__(driver)
 
     def sort_column(self, column_name):
-        self.wait_for_and_click(*CommonTableLocators.HEADER_BY_NAME(column_name))
+        self.wait_for_and_click(CommonTableLocators.HEADER_BY_NAME(column_name))
 
     def verify_column_sorting(self, column_name, order="ascending", is_numeric=False):
         """
@@ -334,21 +320,17 @@ class TableSorting(BasePage):
         )
         return True
 
-class TablePagination(BasePage):
-
-    def __init__(self, driver):
-        super().__init__(driver)
 
     def change_rows_per_page(self, count):
-        self.wait_for_and_click(*PaginationLocators.ROWS_PER_PAGE_DROPDOWN)
-        self.wait_for_and_click(*PaginationLocators.ROWS_PER_PAGE_OPTION(count))
+        self.wait_for_and_click(PaginationLocators.ROWS_PER_PAGE_DROPDOWN)
+        self.wait_for_and_click(PaginationLocators.ROWS_PER_PAGE_OPTION(count))
 
     def go_to_next_page(self):
-        self.wait_for_and_click(*PaginationLocators.NEXT_PAGE_BTN)
+        self.wait_for_and_click(PaginationLocators.NEXT_PAGE_BTN)
 
     def go_to_prev_page(self):
-        self.wait_for_and_click(*PaginationLocators.PREV_PAGE_BTN)
+        self.wait_for_and_click(PaginationLocators.PREV_PAGE_BTN)
 
     def get_pagination_information(self):
-        element = self.ensure_element_visible(*PaginationLocators.PAGINATION_INFO_TEXT)
+        element = self.ensure_element_visible(PaginationLocators.PAGINATION_INFO_TEXT)
         return element.text.strip()

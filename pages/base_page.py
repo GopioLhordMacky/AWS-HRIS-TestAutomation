@@ -5,6 +5,8 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from config.config import IMPLICIT_WAIT
 
 
@@ -36,6 +38,32 @@ class BasePage:
         except Exception as e:
             print(f"Error finding element with locator {locator}: {e}")
             return None
+    
+    def find_elements(self, by, value):
+        """
+        Non-tuple wrapper that finds a single element using separate 'by' and 'value' arguments.
+        Leaves existing find_element(self, locator) completely intact.
+        
+        Example: page.find_elements(By.XPATH, "//tbody/tr[1]/td[2]")
+        """
+        try:
+            return self.driver.find_element(by, value)
+        except Exception as e:
+            print(f"Error finding element with {by}='{value}': {e}")
+            return None
+
+    def find_elements_len(self, by, value):
+        """
+        Non-tuple wrapper that finds multiple elements using separate 'by' and 'value' arguments.
+        Returns a list of WebElements so len() works seamlessly.
+        
+        Example: row_count = len(page.find_elements(By.XPATH, "//tbody/tr/td[1]"))
+        """
+        try:
+            return self.driver.find_elements(by, value)
+        except Exception as e:
+            print(f"Error finding elements with {by}='{value}': {e}")
+            return []
 
     def find(self, locator):
         """Alias for find_element to maintain backward compatibility."""
@@ -87,38 +115,26 @@ class BasePage:
         """Alias for type to support existing child page implementations."""
         return self.type(locator, text, clear_first=clear_first)
 
-    def wait_for_and_click(self, locator, timeout=10):
-        element = WebDriverWait(self.driver, timeout).until(
-            EC.element_to_be_clickable(locator)
-        )
-        element.click()
-        return element
+    def wait_for_and_click (self, locator):
+        return self.click(locator)
+    
+    # def ensure_element_visible(self, locator):
+    #     """
+    #     Waits until an element is visible in the DOM and returns it.
+    #     Uses the instance's standard explicit wait engine (self.wait).
 
-    def ensure_element_visible(self, locator, timeout=10):
-        return WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(locator)
-        )
+    #     """
+    #     return self.wait.until(EC.visibility_of_element_located(locator))
 
-    def verify_input_is_empty(self, locator, timeout=10):
+    def verify_input_is_empty(self, locator) -> bool:
         """
         Checks if an input or textarea element's value is empty or contains only whitespace.
-        
-        :param locator: Tuple (By, "value") representing the element locator
-        :param timeout: Time to wait for element presence
-        :return: bool
+
         """
-        element = WebDriverWait(self.driver, timeout).until(
-            EC.presence_of_element_located(locator)
-        )
-        # Retrieves value from 'value' attribute or visible text (for select/dropdown wrappers)
+        element = self.wait.until(EC.presence_of_element_located(locator))
+        # Retrieves value from 'value' attribute or visible text (for custom select/dropdown wrappers)
         value = element.get_attribute("value") or element.text or ""
         return value.strip() == ""
-
-    def clear_input_field(self, locator):
-        element = self.driver.find_element(*locator)
-        element.click()
-        element.send_keys(Keys.CONTROL, "a")
-        element.send_keys(Keys.BACKSPACE)
 
     def input_text(self, locator, text):
         """Consolidated alias for type() to prevent breaking legacy calls."""
