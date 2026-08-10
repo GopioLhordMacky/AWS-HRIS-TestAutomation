@@ -13,16 +13,16 @@ class Navigation(BasePage):
         super().__init__(driver)
 
     def navigate_to_page(self, page_name):
-        self.wait_for_and_click(*LoginLocators.SIDEBAR_MENU_ITEM(page_name))
+        self.wait_for_and_click(LoginLocators.SIDEBAR_MENU_ITEM(page_name))
 
     def switch_tab(self, tab_name):
-        self.wait_for_and_click(*TabNavigationLocators.SUB_TAB_BY_NAME(tab_name))
+        self.wait_for_and_click(TabNavigationLocators.SUB_TAB_BY_NAME(tab_name))
 
     def switch_view_mode(self, mode="table"):
         if mode.lower() == "table":
-            self.wait_for_and_click(*ViewModeLocators.TABLE_VIEW_BTN)
+            self.wait_for_and_click(ViewModeLocators.TABLE_VIEW_BTN)
         elif mode.lower() == "card":
-            self.wait_for_and_click(*ViewModeLocators.CARD_VIEW_BTN)
+            self.wait_for_and_click(ViewModeLocators.CARD_VIEW_BTN)
 
     def tab_navigation(self, locator, keys=None, helper=None, *helper_args, **helper_kwargs):
         """

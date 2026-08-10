@@ -117,14 +117,6 @@ class BasePage:
 
     def wait_for_and_click (self, locator):
         return self.click(locator)
-    
-    # def ensure_element_visible(self, locator):
-    #     """
-    #     Waits until an element is visible in the DOM and returns it.
-    #     Uses the instance's standard explicit wait engine (self.wait).
-
-    #     """
-    #     return self.wait.until(EC.visibility_of_element_located(locator))
 
     def verify_input_is_empty(self, locator) -> bool:
         """

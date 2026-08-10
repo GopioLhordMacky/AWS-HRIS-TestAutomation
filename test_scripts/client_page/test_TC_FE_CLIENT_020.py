@@ -1,21 +1,15 @@
-from pages.client_page import *
-from locators.client_page_locators import *
-from imports.main_imports.main_imports import *
-from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
+import time
 
+class TestClientPage:
 
+    def test_tc_fe_clients_020(self, authenticated_driver):
+        """Verify Default Selected Value in Industry Dropdown on Clients page."""
+        page = go_to_client_page(authenticated_driver, via="url")
 
-def test_tc_fe_clients_020(client_page):
-    """Verify Default Selected Value in Industry Dropdown on Clients page."""
-    page = client_page
+        time.sleep(2)
 
-    time.sleep(3)
-
-    # Steps 1-4: Observe Industry dropdown default selection on the main Clients page table filter
-    assert page.verify_input_matches(
-         
-        Filter_and_Search_Section.INDUSTRY_FILTER_DROPDOWN,
-        "All"
-    ), "Expected default selected value in Industry dropdown to be 'ALL', but it was not."
+        # Steps 1-4: Observe Industry dropdown default selection on the main Clients page table filter
+        assert page.verify_industry_input_matches_client(expected_text="All"), "Default selected value in Industry dropdown does not match expected 'All Industries'."
 
     

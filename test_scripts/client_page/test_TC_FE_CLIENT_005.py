@@ -4,6 +4,7 @@ class TestClientPage:
 
     def test_tc_fe_clients_005(self, authenticated_driver):
         """TC_FE_CLIENTS_005: Verify the '+ Add Client' button opens the 'Add Client' modal."""
+
         page = go_to_client_page (authenticated_driver, via="url")
 
         # Step 1: Click the "+ Add Client" button

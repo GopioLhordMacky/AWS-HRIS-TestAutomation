@@ -9,6 +9,7 @@ from imports.client_page_imports import *
 from pages.base_page import BasePage
 from components.tables import Table
 from components.elements import Element
+from components.modals import Modals
 
 class ClientPage(BasePage):
     
@@ -17,10 +18,291 @@ class ClientPage(BasePage):
         self.table = Table(driver)   
         self.element = Element(driver)           
         self.navigation = Navigation(driver)
+        self.modal = Modals(driver)
+
+# =========================================================================
+    # PAGE LEVEL ACTIONS
+    # =========================================================================
 
     def click_add_client_button(self):
         """Clicks the primary Add Client button on the page."""
         self.wait_for_and_click(Client_Locators.ADD_CLIENT_BUTTON)
+        return self  # Return self for method chaining
+
+    def click_edit_button_client(self):
+        """Clicks the Edit button for a row item."""
+        try:
+            self.wait_for_and_click(Row_Actions.EDIT_BUTTON)
+            return True
+        except Exception as e:
+            print(f"[ERROR] Failed to click Edit button: {e}")
+            return False
+
+# =========================================================================
+    # VISIBILITY & STATUS CHECKS (ELEMENT COMPONENT DELEGATION)
+    # =========================================================================
+
+    def is_client_modal_inputs_visible_client(self):
+        """Verifies if all core input fields inside the client modal are visible."""
+        return all([
+            self.element.is_component_visible(Update_Modal_Inputs.CLIENT_NAME_INPUT),
+            self.element.is_component_visible(Update_Modal_Inputs.INDUSTRY_SELECT),
+            self.element.is_component_visible(Update_Modal_Inputs.COUNTRY_SELECT),
+            self.element.is_component_visible(Update_Modal_Inputs.CONTACT_PERSON_INPUT),
+            self.element.is_component_visible(Update_Modal_Inputs.EMAIL_ADDRESS_INPUT),
+            self.element.is_component_visible(Update_Modal_Inputs.PHONE_NUMBER_INPUT),
+        ])
+
+    def is_client_modal_buttons_visible_client(self):
+        """Verifies if the action buttons inside the client modal are visible."""
+        return all([
+            self.element.is_component_visible(Modal_Action_Buttons.CLOSE_BUTTON),
+            self.element.is_component_visible(Modal_Action_Buttons.SAVE_BUTTON)
+        ])
+
+    def is_client_modal_visible_client(self):
+        """Verifies if the main modal body is visible."""
+        return self.element.is_component_visible(Update_Modal_Inputs.MODAL_BODY)
+
+    def is_toast_notification_visible_client(self):
+        """Verifies if the error validation toast message is visible."""
+        return self.element.is_component_visible(
+            Toast_Notifications_Validation_Messages.FIELD_ERROR_MESSAGE
+        )
+
+    def is_add_client_button_visible_client(self):
+        """Verifies if the Add Client button is visible on the page."""
+        return self.element.is_component_visible(Client_Locators.ADD_CLIENT_BUTTON)
+
+    def is_search_bar_and_dropdown_visible_client(self):
+        """Verifies if search and filter dropdown controls are visible."""
+        return all([
+            self.element.is_component_visible(Filter_and_Search_Section.SEARCH_BAR),
+            self.element.is_component_visible(Filter_and_Search_Section.STATUS_FILTER_DROPDOWN),
+            self.element.is_component_visible(Filter_and_Search_Section.INDUSTRY_FILTER_DROPDOWN)
+        ])
+
+    def is_pagination_component_visible_client(self):
+        """Verifies if the table pagination container is visible."""
+        return self.element.is_component_visible(Pagination_Section.PAGINATION_CONTAINER)
+
+    def verify_country_dropdown_options(self, 
+                                        dropdown_locator = Update_Modal_Inputs.COUNTRY_SELECT,
+                                        expected_options = Options.country_options,
+                                        options_locator=None):
+        """Verifies dropdown options against expected list."""
+        return self.element.verify_dropdown_options(dropdown_locator, expected_options, options_locator)
+
+    def verify_industry_dropdown_options(self, 
+                                        dropdown_locator = Update_Modal_Inputs.INDUSTRY_SELECT,
+                                        expected_options = Options.industry_options,
+                                        options_locator=None):
+        """Verifies dropdown options against expected list."""
+        return self.element.verify_dropdown_options(dropdown_locator, expected_options, options_locator)
+
+    def verify_input_is_empty_client(self, locator):
+        """Verifies whether an input field is empty."""
+        return self.element.verify_input_is_empty(locator)
+
+    def verify_industry_input_matches_client(self, locator= Filter_and_Search_Section.INDUSTRY_FILTER_DROPDOWN, expected_text=None):
+        """Verifies if an input value matches expected text."""
+        return self.element.verify_input_matches(locator, expected_text)
+
+    def verify_status_input_matches_client(self, locator= Filter_and_Search_Section.STATUS_FILTER_DROPDOWN, expected_text=None):
+        """Verifies if an input value matches expected text."""
+        return self.element.verify_input_matches(locator, expected_text)
+
+    def select_custom_dropdown_client(self, dropdown_label, option_text):
+        """Selects an option from a labeled custom dropdown."""
+        return self.element.select_custom_dropdown(dropdown_label, option_text)
+
+    def toggle_active_status_client(self, row_index, column_name="Active"):
+        """Toggles active switch in a specific table row."""
+        return self.element.toggle_active_status(row_index, column_name)
+
+    def verify_active_toggle_state_client(self, row_index, column_name="Active"):
+        """Checks if active status toggle is selected."""
+        return self.element.verify_active_toggle_state(row_index, column_name)
+
+# =========================================================================
+    # MODAL UTILITIES (MODALS COMPONENT DELEGATION)
+    # =========================================================================
+    def click_close_modal_client(self):
+        """Clicks close button in modal."""
+        self.modal.click_close()
+        return self
+
+    def click_confirm_modal_client(self):
+        """Clicks confirm button in modal dialog."""
+        self.modal.click_confirm()
+        return self
+
+    def click_cancel_modal_client(self):
+        """Clicks cancel button in modal."""
+        self.modal.click_cancel()
+        return self
+
+    def click_save_only_modal_client(self):
+        """Clicks save button in modal."""
+        self.modal.click_save_only()
+        return self
+
+    def click_save_confirm_modal_client(self):
+        """Clicks save and then secondary confirm button."""
+        self.modal.click_save_confirm()
+        return self
+
+    def click_close_x_modal_client(self):
+        """Clicks header X button on modal."""
+        self.modal.click_close_x()
+        return self
+
+    def click_outside_modal_client(self):
+        """Dismisses modal by hitting ESC."""
+        self.modal.click_outside_modal()
+        return self
+
+    def fill_edit_text_modal_client(self, field_identifier, new_text):
+        """Clears and fills input field inside a modal."""
+        self.modal.fill_edit_text_modal(field_identifier, new_text)
+        return self
+
+    def fill_industry_select_modal_client(self, new_option = ClientFormData.VALID_INDUSTRY):
+        """Clears and selects option inside modal dropdown."""
+        self.modal.fill_edit_select_modal("Industry", new_option)
+        return self
+
+    def fill_country_select_modal_client(self, new_option = ClientFormData.VALID_COUNTRY):
+        """Clears and selects option inside modal dropdown."""
+        self.modal.fill_edit_select_modal("Country", new_option)
+        return self
+
+    def check_error_message_client(self, expected_text=None):
+        """Verifies inline/modal error messages."""
+        return self.modal.check_error_message(expected_text)
+
+    def check_toast_message_client(self, expected_text=None):
+        """Verifies toast popup message."""
+        return self.modal.check_toast_message(expected_text)
+
+# =========================================================================
+    # NAVIGATION UTILITIES (NAVIGATION COMPONENT DELEGATION)
+    # =========================================================================
+
+    def navigate_to_page(self, client_page):
+        """Navigates to a specific sidebar page."""
+        self.navigation.navigate_to_page(client_page)
+        return self
+
+    def switch_tab_client(self, tab_name):
+        """Switches sub-tabs on client page."""
+        return self.navigation.switch_tab(tab_name)
+
+    def switch_view_mode_client(self, mode="table"):
+        """Toggles table vs card view mode."""
+        return self.navigation.switch_view_mode(mode)
+
+    def tab_navigation_client(self, locator, keys=None, helper=None, *helper_args, **helper_kwargs):
+        """Navigates via keyboard Tab key until focus reached."""
+        return self.navigation.tab_navigation(locator, keys, helper, *helper_args, **helper_kwargs)
+
+    # =========================================================================
+    # TABLE UTILITIES (TABLE COMPONENT DELEGATION)
+    # =========================================================================
+
+    def get_table_headers_client(self):
+        """Retrieves list of table header titles."""
+        return self.table.get_table_headers()
+
+    def get_single_table_row_data_client(self, row_idx=1):
+        """Retrieves row data for a single row index."""
+        return self.table.get_single_table_row_data(row_idx)
+
+    def count_table_rows_client(self):
+        """Returns count of visible rows in table."""
+        return self.table.count_table_rows()
+
+    def get_table_row_data_client(self):
+        """Retrieves 2D list of all table row texts."""
+        return self.table.get_table_row_data()
+
+    def get_column_index_client(self, column_name):
+        """Returns index of specified column name."""
+        return self.table.get_column_index(column_name)
+
+    def check_column_cells_client(self, column_name):
+        """Extracts text for all cells in a column."""
+        return self.table.check_column_cells(column_name)
+
+    def check_column_cells_not_empty_client(self, column_name):
+        """Verifies no cell in target column is empty/blank/dash."""
+        return self.table.check_column_cells_not_empty(column_name)
+
+    def expand_tree_row_client(self, row_index):
+        """Expands caret row in tree table."""
+        return self.table.expand_tree_row(row_index)
+
+    def click_edit_btn_client(self, target):
+        """Clicks edit button by index or value target."""
+        return self.table.click_edit_btn(target)
+
+    def click_edit_btn_by_row_index_client(self, row_idx=1):
+        """Clicks edit button on specific row index."""
+        return self.table.click_edit_btn_by_row_index(row_idx)
+
+    def click_edit_btn_by_column_value_client(self, column_name, text):
+        """Clicks edit button matching a column text value."""
+        return self.table.click_edit_btn_by_column_value(column_name, text)
+
+    def check_toggle_status_on_table_client(self, column_name, text):
+        """Verifies active/inactive switch state across rows."""
+        return self.table.check_toggle_status_on_table(column_name, text)
+
+    def search_in_table_client(self, search_term):
+        """Types query term into global table search box."""
+        return self.table.search_in_table(search_term)
+
+    def check_table_data_by_search_client(self, column_name, text):
+        """Filters table by search and verifies query text exists."""
+        return self.table.check_table_data_by_search(column_name, text)
+
+    def check_table_data_by_dropdown_client(self, column_name, text):
+        """Filters table by dropdown across pagination pages."""
+        return self.table.check_table_data_by_dropdown(column_name, text)
+
+    def verify_no_results_found_client(self, expected_text="No results found"):
+        """Checks for table empty state message."""
+        return self.table.verify_no_results_found(expected_text)
+
+    def check_table_verify_no_results_client(self, search_term, expected_text="No results found"):
+        """Searches invalid term and asserts empty state message."""
+        return self.table.check_table_verify_no_results(search_term, expected_text)
+
+    def sort_column_client(self, column_name):
+        """Clicks column header to sort table."""
+        return self.table.sort_column(column_name)
+
+    def verify_column_sorting_client(self, column_name, order="ascending", is_numeric=False):
+        """Verifies sorting sequence on column values."""
+        return self.table.verify_column_sorting(column_name, order, is_numeric)
+
+    def change_rows_per_page_client(self, count):
+        """Changes pagination row count dropdown."""
+        return self.table.change_rows_per_page(count)
+
+    def go_to_next_page_client(self, ):
+        """Navigates to next pagination page."""
+        return self.table.go_to_next_page()
+
+    def go_to_prev_page_client(self):
+        """Navigates to previous pagination page."""
+        return self.table.go_to_prev_page()
+
+    def get_pagination_information_client(self):
+        """Returns pagination text string (e.g. '1-10 of 50')."""
+        return self.table.get_pagination_information()
+
+## ------------------------------------------------------------------------------- ##
 
     def click_edit_button(self):
         """Clicks the Edit button for a row item."""
@@ -36,12 +318,41 @@ class ClientPage(BasePage):
             self.element.is_component_visible(Update_Modal_Inputs.CLIENT_NAME_INPUT),
             self.element.is_component_visible(Update_Modal_Inputs.INDUSTRY_SELECT),
             self.element.is_component_visible(Update_Modal_Inputs.COUNTRY_SELECT),
-            self.element.is_component_visible(Update_Modal_Inputs.CONTACT_PERSON_INPUT)
+            self.element.is_component_visible(Update_Modal_Inputs.CONTACT_PERSON_INPUT),
+            self.element.is_component_visible(Update_Modal_Inputs.EMAIL_ADDRESS_INPUT),
+            self.element.is_component_visible(Update_Modal_Inputs.PHONE_NUMBER_INPUT),  
         ])
-       
+
+    def is_client_modal_buttons_visible(self):
+        return all ([
+            self.element.is_component_visible(Modal_Action_Buttons.CLOSE_BUTTON),
+            self.element.is_component_visible(Modal_Action_Buttons.SAVE_BUTTON)
+        ])
 
     def is_client_modal_visible(self):
         return self.element.is_component_visible(Update_Modal_Inputs.MODAL_BODY)
+
+    def is_toast_notification_visible(self):
+        return self.element.is_component_visible(Toast_Notifications_Validation_Messages.FIELD_ERROR_MESSAGE)
+       
+    def is_client_modal_visible(self):
+        return self.element.is_component_visible(Update_Modal_Inputs.MODAL_BODY)
+
+    def is_add_client_button_visible(self):
+        return self.element.is_component_visible(Client_Locators.ADD_CLIENT_BUTTON)
+
+    def is_search_bar_and_dropdown_visible(self):
+        return all([
+            self.element.is_component_visible(Filter_and_Search_Section.SEARCH_BAR),
+            self.element.is_component_visible(Filter_and_Search_Section.STATUS_FILTER_DROPDOWN),
+            self.element.is_component_visible(Filter_and_Search_Section.INDUSTRY_FILTER_DROPDOWN)
+        ])
+
+    def is_pagination_component_visible(self):
+        return self.element.is_component_visible(Pagination_Section.PAGINATION_CONTAINER)
+    
+    def get_table_header_clients(self):
+        return self.table.get_table_headers()
     
     def get_table_headers_client(self):
         return self.table.get_table_headers()
@@ -112,6 +423,8 @@ class ClientPage(BasePage):
         self.wait_and_type(Update_Modal_Inputs.EMAIL_ADDRESS_INPUT, email)
         self.wait_and_type(Update_Modal_Inputs.PHONE_NUMBER_INPUT, phone)
         self.wait_and_type(Update_Modal_Inputs.ADDRESS_INPUT, address)
+
+        return True  # Indicate successful form fill
 
     def update_client_form(
         self,

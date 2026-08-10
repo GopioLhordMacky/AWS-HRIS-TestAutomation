@@ -10,20 +10,6 @@ class TestClientPage:
         page.click_add_client_button()
 
         # 2. Verify Modal Title & Container
-        assert page.is_client_modal_inputs_visible(), "FAILED"
+        assert page.is_client_modal_inputs_visible(), "Failed to display all required input fields in the 'Add Client' modal."
+        assert page.is_client_modal_buttons_visible(), "Failed to display all required action buttons in the 'Add Client' modal."
 
-        # assert page.is_component_visible(  Update_Modal_Inputs.MODAL_BODY), "Modal body is not visible."
-        
-        # # 3. Verify Form Fields (Inputs & Selects)
-        # assert page.is_component_visible(  Update_Modal_Inputs.CLIENT_NAME_INPUT), "Client Name input missing."
-        # assert page.is_component_visible(  Update_Modal_Inputs.INDUSTRY_SELECT), "Industry dropdown missing."
-        # assert page.is_component_visible(  Update_Modal_Inputs.COUNTRY_SELECT), "Country dropdown missing."
-        # assert page.is_component_visible(  Update_Modal_Inputs.CONTACT_PERSON_INPUT), "Contact Person input missing."
-        # assert page.is_component_visible(  Update_Modal_Inputs.EMAIL_ADDRESS_INPUT), "Email Address input missing."
-        # assert page.is_component_visible(  Update_Modal_Inputs.PHONE_NUMBER_INPUT), "Phone Number input missing."
-        # assert page.is_component_visible(  Update_Modal_Inputs.ADDRESS_INPUT), "Address input missing."
-        
-        # # 4. Verify Action Buttons
-        # assert page.is_component_visible(  Modal_Action_Buttons.CLOSE_BUTTON), "Close button missing."
-        # assert page.is_component_visible(  Modal_Action_Buttons.SAVE_BUTTON), "Save button missing."
-        

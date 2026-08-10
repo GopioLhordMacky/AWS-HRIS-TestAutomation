@@ -25,6 +25,13 @@ class Options:
         "Life Sciences Technology"
     ]
 
+        country_options = [
+        "Philippines",
+        "United States of America",
+        "Singapore",
+        "China" 
+        ]
+
         status_options = [
         "Active",
         "Inactive"

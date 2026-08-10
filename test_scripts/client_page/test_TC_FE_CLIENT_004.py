@@ -1,26 +1,23 @@
-from pages.client_page import *
-from locators.client_page_locators import *
-from imports.main_imports.main_imports import *
-from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
-def test_tc_fe_clients_004(client_page):
-    """Verify UI design and presence of mandatory components on Clients Module."""
-    page = client_page
-    
-    # 1. Title & Core Table Check
-    # 2. Add Client Button & Search Bar Check
-    assert page.ensure_element_visible(Client_Locators.ADD_CLIENT_BUTTON), "Add Client button missing."
-    assert page.ensure_element_visible(Filter_and_Search_Section.SEARCH_BAR), "Search bar missing."
+class TestClientPage:
 
-    # 3. Dropdowns Check
-    assert page.ensure_element_visible(Filter_and_Search_Section.INDUSTRY_FILTER_DROPDOWN), "Industry dropdown missing."
-    assert page.ensure_element_visible(Filter_and_Search_Section.STATUS_FILTER_DROPDOWN), "Status dropdown missing."
+    def test_tc_fe_clients_004(self, authenticated_driver):
+        """Verify UI design and presence of mandatory components on Clients Module."""
 
-    # 4. Table Columns Check
-    headers = page.get_table_headers()
-    expected_columns = ["Client Name", "Industry", "Country", "Contact Person", "Active"]
-    for column in expected_columns:
-        assert any(column.lower() in h.lower() for h in headers), f"Column '{column}' missing from table."
+        page = go_to_client_page(authenticated_driver, via="url")
 
-    # 5. Pagination Component Check
-    assert page.ensure_element_visible(Pagination_Section.PAGINATION_CONTAINER), "Pagination component missing."
+        # 2. Add Client Button
+        assert page.is_add_client_button_visible(), "Add Client button missing."
+
+        # 3. Dropdowns and Search Bar Check
+        assert page.is_search_bar_and_dropdown_visible(), "Search bar or dropdowns missing."
+
+        # 4. Table Columns Check
+        headers = page.get_table_header_clients()
+        expected_columns = ["Client Name", "Industry", "Country", "Contact Person", "Active"]
+        for column in expected_columns:
+            assert any(column.lower() in h.lower() for h in headers), f"Column '{column}' missing from table."
+
+        # 5. Pagination Component Check
+        assert page.is_pagination_component_visible(), "Pagination component missing."
