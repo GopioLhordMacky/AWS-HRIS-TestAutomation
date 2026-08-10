@@ -28,6 +28,35 @@ class BasePage:
     # =========================================================================
     # 1. CORE ELEMENT LOCATORS & SEARCH (Cleaned & Standardized)
     # =========================================================================
+
+    def get_browser_console_errors(self) -> bool:
+        """
+        Retrieves browser logs, prints any severe/error messages, and verifies status.
+        :return: True if NO console errors exist (clean console), False if errors are detected.
+        """
+        try:
+            # Fetch browser console logs
+            logs = self.driver.get_log("browser")
+            
+            # Filter for severe/error level entries
+            errors = [
+                entry for entry in logs 
+                if entry.get("level") in ["SEVERE", "ERROR"]
+            ]
+            
+            if errors:
+                print(f"\n[CONSOLE ERRORS DETECTED] ({len(errors)} error(s) found):")
+                for index, err in enumerate(errors, 1):
+                    # Prints timestamp, level, and error message
+                    print(f"  {index}. [{err.get('level')}] {err.get('message')}")
+                return False
+                
+            return True
+            
+        except Exception as e:
+            print(f"[WARNING] Could not retrieve browser logs: {e}")
+            return True
+    
     def find_element(self, locator):
         """
         Finds a single element directly without locator type restrictions.

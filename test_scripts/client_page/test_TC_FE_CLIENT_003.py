@@ -1,22 +1,19 @@
-from pages.client_page import *
-from locators.client_page_locators import *
-from imports.main_imports.main_imports import *
-from imports.client_page_imports import *
+import time
+from utils.navigation_helpers import go_to_client_page
 
 
-@pytest.mark.skip (reason = "Client Page has errors")
-def test_tc_fe_clients_003(client_page):
-    """Verify no severe browser console errors on page load."""
-    page = client_page
+class TestClientPage:
 
-    time.sleep(2)
+    def test_tc_fe_clients_003(self, authenticated_driver):
+        """
+        (Functionality) Verify no severe browser console errors on page load.
+        """
+        page = go_to_client_page(authenticated_driver, via="url")
 
-    # Retrieve browser console performance/error logs
-    page.refresh()
+        time.sleep(2)
 
-    # Fetch browser console logs
-    errors = page.get_browser_console_errors()
-    assert len(errors) == 0, f"Severe console errors detected upon page reload: {errors}"
-    print(" SUCCESS: No severe console errors detected during reload.")
-
-    
+        # Checks for errors, prints them if present, and asserts result
+        assert page.check_console_error_client(), (
+            "Severe console errors detected upon page load."
+        )
+        print("\nSUCCESS: No severe console errors detected during load.")

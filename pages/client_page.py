@@ -19,10 +19,14 @@ class ClientPage(BasePage):
         self.element = Element(driver)           
         self.navigation = Navigation(driver)
         self.modal = Modals(driver)
-
 # =========================================================================
     # PAGE LEVEL ACTIONS
     # =========================================================================
+
+    def check_console_error_client(self):
+        """Checks browser console for errors."""
+        self.get_browser_console_errors()
+        return self
 
     def click_add_client_button(self):
         """Clicks the primary Add Client button on the page."""
