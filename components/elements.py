@@ -110,6 +110,35 @@ class Element(BasePage):
         self.wait_for_and_click(DropdownLocators.DROPDOWN_CONTAINER_BY_LABEL(dropdown_label))
         self.wait_for_and_click(DropdownLocators.DROPDOWN_OPTION(option_text))
 
+    def select_react_dropdown(self, locator, option_text):
+        """
+        Handles React-Select and modern custom dropdowns by typing and selecting an option.
+        
+        :param locator: Tuple (By, value) representing the dropdown input element
+        :param option_text: String text of the option to search and select
+        """
+        try:
+            # 1. Wait until the input element is ready to accept interaction
+            dropdown_input = self.wait.until(EC.element_to_be_clickable(locator))
+            
+            # 2. Click to open/focus, clear existing text, and type search string
+            dropdown_input.click()
+            dropdown_input.send_keys(Keys.CONTROL + "a")
+            dropdown_input.send_keys(Keys.BACKSPACE)
+            dropdown_input.send_keys(option_text)
+            
+            # 3. Wait for option container or menu item to appear, then select
+            self.wait.until(
+                EC.presence_of_element_located((By.XPATH, f"//*[contains(text(), '{option_text}')]"))
+            )
+            dropdown_input.send_keys(Keys.ENTER)
+            
+            return self
+            
+        except TimeoutException:
+            print(f"Failed to locate or select option '{option_text}' in React dropdown {locator}")
+            raise
+
     def toggle_active_status(self, row_index, column_name="Active"):
         col_idx = self.get_column_index(column_name)
         self.wait_for_and_click(ToggleSwitchLocators.TOGGLE_BY_ROW_AND_COL(row_index, col_idx))

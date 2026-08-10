@@ -114,6 +114,10 @@ class Table(BasePage):
             print(f"[check_table_toggle_data_by_dropdown] Exception: {e}")
             return False
 
+    def select_custom_dropdown(self, dropdown_label, option_text):
+        self.wait_for_and_click(DropdownLocators.DROPDOWN_OPTION(dropdown_label))
+        self.wait_for_and_click(DropdownLocators.DROPDOWN_OPTION(option_text))
+
     def search_in_table(self, search_term):
         search_enter = self.wait_and_type(SearchLocators.GLOBAL_SEARCH_INPUT, text=search_term)
         # search_enter.send_keys(Keys.ENTER)
@@ -173,7 +177,7 @@ class Table(BasePage):
             time.sleep(2)
 
             # 2. Filter the table using the dropdown
-            self.select_custom_dropdown(column_name, text)
+            # self.select_custom_dropdown(column_name, text)
             time.sleep(3)  # Wait for filter application
 
             expected_text = text.strip().lower()
@@ -256,8 +260,7 @@ class Table(BasePage):
         :return: True if the search yields the expected empty state, False otherwise
         """
         # Step 1: Perform the search
-        search_enter = self.wait_and_type(*SearchLocators.GLOBAL_SEARCH_INPUT, text=search_term)
-        search_enter.send_keys(Keys.ENTER)
+        search_enter = self.wait_and_type(SearchLocators.GLOBAL_SEARCH_INPUT, text=search_term)
         time.sleep(2)
         
         # Step 2: Verify the empty state in the table body

@@ -42,6 +42,14 @@ class ClientPage(BasePage):
     # VISIBILITY & STATUS CHECKS (ELEMENT COMPONENT DELEGATION)
     # =========================================================================
 
+    def is_save_button_clickable_client(self):
+        """Checks if the Save button in the modal is clickable."""
+        return self.element.is_component_clickable(ModalLocators.SAVE_BUTTON)
+
+    def is_close_button_clickable_client(self):
+        """Checks if the Close button in the modal is clickable."""
+        return self.element.is_component_clickable(ModalLocators.CLOSE_BUTTON)
+    
     def is_client_modal_inputs_visible_client(self):
         """Verifies if all core input fields inside the client modal are visible."""
         return all([
@@ -100,21 +108,36 @@ class ClientPage(BasePage):
         """Verifies dropdown options against expected list."""
         return self.element.verify_dropdown_options(dropdown_locator, expected_options, options_locator)
 
+    def verify_status_dropdown_options(self, 
+                                    dropdown_locator = Filter_and_Search_Section.STATUS_FILTER_DROPDOWN,
+                                    expected_options = Options.status_options,
+                                    options_locator=None):
+        """Verifies dropdown options against expected list."""
+        return self.element.verify_dropdown_options(dropdown_locator, expected_options, options_locator)
+
     def verify_input_is_empty_client(self, locator):
         """Verifies whether an input field is empty."""
         return self.element.verify_input_is_empty(locator)
+
+    def verify_search_input_matches_client(self, locator= Filter_and_Search_Section.SEARCH_BAR, expected_text=None):
+        """Verifies if an input value matches expected text."""
+        return self.element.verify_input_matches(locator, expected_text)
 
     def verify_industry_input_matches_client(self, locator= Filter_and_Search_Section.INDUSTRY_FILTER_DROPDOWN, expected_text=None):
         """Verifies if an input value matches expected text."""
         return self.element.verify_input_matches(locator, expected_text)
 
-    def verify_status_input_matches_client(self, locator= Filter_and_Search_Section.STATUS_FILTER_DROPDOWN, expected_text=None):
+    def verify_status_input_matches_client(self, locator= Filter_and_Search_Section.STATUS_FILTER_DROPDOWN, expected_text="Active"):
         """Verifies if an input value matches expected text."""
         return self.element.verify_input_matches(locator, expected_text)
 
-    def select_custom_dropdown_client(self, dropdown_label, option_text):
+    def select_industry_filter_client(self, option_text):
         """Selects an option from a labeled custom dropdown."""
-        return self.element.select_custom_dropdown(dropdown_label, option_text)
+        return self.element.select_custom_dropdown("Industry", option_text)
+
+    def select_status_filter_client(self, option_text):
+        """Selects an option from a labeled custom dropdown."""
+        return self.element.select_custom_dropdown("Status", option_text)
 
     def toggle_active_status_client(self, row_index, column_name="Active"):
         """Toggles active switch in a specific table row."""
@@ -177,6 +200,16 @@ class ClientPage(BasePage):
         self.modal.fill_edit_select_modal("Country", new_option)
         return self
 
+    def select_industry_filter_dropdown_client(self, option_text):
+        """Selects an option from the Industry filter dropdown."""
+        self.element.select_react_dropdown(Filter_and_Search_Section.INDUSTRY_FILTER_DROPDOWN, option_text)
+        return self
+    
+    def select_status_filter_dropdown_client(self, option_text):
+        """Selects an option from the Status filter dropdown."""
+        self.element.select_custom_dropdown(Filter_and_Search_Section.STATUS_FILTER_DROPDOWN, option_text)
+        return self
+
     def check_error_message_client(self, expected_text=None):
         """Verifies inline/modal error messages."""
         return self.modal.check_error_message(expected_text)
@@ -206,9 +239,58 @@ class ClientPage(BasePage):
         """Navigates via keyboard Tab key until focus reached."""
         return self.navigation.tab_navigation(locator, keys, helper, *helper_args, **helper_kwargs)
 
+    def tab_navigation_industry_filter(self, helper=None, *helper_args, **helper_kwargs):
+        """Navigates via keyboard Tab key until focus reached."""
+        return self.navigation.tab_navigation(Filter_and_Search_Section.INDUSTRY_FILTER_DROPDOWN,
+                                               [Keys.ENTER, Keys.ARROW_DOWN, Keys.ENTER],
+                                                 helper, *helper_args, **helper_kwargs)
+
+    def tab_navigation_status_filter(self, helper=None, *helper_args, **helper_kwargs):
+        """Navigates via keyboard Tab key until focus reached."""
+        return self.navigation.tab_navigation(Filter_and_Search_Section.STATUS_FILTER_DROPDOWN,
+                                                [Keys.ARROW_DOWN, Keys.ENTER],
+                                                    helper, *helper_args, **helper_kwargs)
+
+    def tab_navigation_search_bar(self, helper=None, *helper_args, **helper_kwargs):
+        """Navigates via keyboard Tab key until focus reached."""
+        return self.navigation.tab_navigation(Filter_and_Search_Section.SEARCH_BAR,
+                                                [Keys.ENTER],
+                                                    helper, *helper_args, **helper_kwargs)
+
     # =========================================================================
     # TABLE UTILITIES (TABLE COMPONENT DELEGATION)
     # =========================================================================
+    def get_dropdown_value(self, label_name):
+        xpath = (
+            f"//div[contains(@class, 'modal-content')]"
+            f"//label[normalize-space()='{label_name}']"
+            f"/following::div[contains(@class, 'singleValue') or contains(@class, '-singleValue')][1]"
+        )
+        
+        # Since find_elements returns a single WebElement (or None):
+        elem = self.find_elements(By.XPATH, xpath)
+        return elem.text.strip() if elem else ""
+        
+    def get_client_name(self):
+            """Retrieves value text from Client Name input field."""
+            try:
+                elem = self.find_element(Update_Modal_Inputs.CLIENT_NAME_INPUT)
+                # If elem is a WebElement instance, fetch value attribute
+                val = elem.get_attribute("value")
+                return val.strip() if val else ""
+            except Exception as e:
+                print(f"[ERROR] Failed to get client name: {e}")
+                return ""
+
+    def get_contact_person(self):
+        """Retrieves value text from Contact Person input field."""
+        try:
+            elem = self.find_element(Update_Modal_Inputs.CONTACT_PERSON_INPUT)
+            val = elem.get_attribute("value")
+            return val.strip() if val else ""
+        except Exception as e:
+            print(f"[ERROR] Failed to get contact person: {e}")
+            return ""
 
     def get_table_headers_client(self):
         """Retrieves list of table header titles."""
@@ -323,6 +405,9 @@ class ClientPage(BasePage):
             self.element.is_component_visible(Update_Modal_Inputs.PHONE_NUMBER_INPUT),  
         ])
 
+    def clear_search_bar(self, locator = Filter_and_Search_Section.SEARCH_BAR):
+        return self.clear_input_field(locator)
+
     def is_client_modal_buttons_visible(self):
         return all ([
             self.element.is_component_visible(Modal_Action_Buttons.CLOSE_BUTTON),
@@ -364,33 +449,6 @@ class ClientPage(BasePage):
 
         """
         return self.wait.until(EC.visibility_of_element_located(locator))
-
-    def select_react_dropdown(self, locator, option_text):
-        """
-        Handles React-Select and modern custom dropdowns by typing and selecting an option.
-        
-        :param locator: Tuple (By, value) representing the dropdown input element
-        :param option_text: String text of the option to search and select
-        """
-        try:
-            # 1. Wait until the input element is ready to accept interaction
-            dropdown_input = self.wait.until(EC.element_to_be_clickable(locator))
-            
-            # 2. Click to open/focus, clear existing text, and type search string
-            dropdown_input.click()
-            dropdown_input.send_keys(Keys.CONTROL + "a")
-            dropdown_input.send_keys(Keys.BACKSPACE)
-            dropdown_input.send_keys(option_text)
-            
-            # 3. Wait for option container or menu item to appear, then select
-            self.wait.until(
-                EC.presence_of_element_located((By.XPATH, f"//*[contains(text(), '{option_text}')]"))
-            )
-            dropdown_input.send_keys(Keys.ENTER)
-            
-        except TimeoutException:
-            print(f"Failed to locate or select option '{option_text}' in React dropdown {locator}")
-            raise
 
     def fill_client_form(
         self,
@@ -445,8 +503,8 @@ class ClientPage(BasePage):
         self.wait_and_type(Update_Modal_Inputs.PHONE_NUMBER_INPUT, phone)
         self.wait_and_type(Update_Modal_Inputs.ADDRESS_INPUT, address)
 
-        self.fill_edit_select_modal("Country", country)
-        self.fill_edit_select_modal("Industry", industry)
+        self.fill_country_select_modal_client()
+        self.fill_industry_select_modal_client()
 
     def verify_client_modal_fields_are_empty(self):
         """

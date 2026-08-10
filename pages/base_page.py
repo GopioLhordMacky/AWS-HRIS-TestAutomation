@@ -133,13 +133,10 @@ class BasePage:
         return self.type(locator, text, clear_first=True)
 
     def clear_input_field(self, locator):
-        """Waits until the element located by 'locator' is visible, then clears its text."""
-        try:
-            element = self.wait.until(EC.visibility_of_element_located(locator))
-            element.clear()
-        except Exception as e:
-            print(f"Error clearing element with locator {locator}: {e}")
-            raise
+        element = self.driver.find_element(*locator)
+        element.click()
+        element.send_keys(Keys.CONTROL, "a")
+        element.send_keys(Keys.BACKSPACE)
 
     def get_text(self, locator) -> str:
         """

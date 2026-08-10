@@ -85,11 +85,11 @@ class Modals(BasePage):
         value = element.get_attribute("value") or element.text or ""
         return value.strip() == ""
 
-    def clear_input_field(self, locator):
-        element = self.driver.find_element(*locator)
-        element.click()
-        element.send_keys(Keys.CONTROL, "a")
-        element.send_keys(Keys.BACKSPACE)
+    # def clear_input_field(self, locator):
+    #     element = self.driver.find_element(*locator)
+    #     element.click()
+    #     element.send_keys(Keys.CONTROL, "a")
+    #     element.send_keys(Keys.BACKSPACE)
 
     def check_error_message(self, expected_text=None):
         """Checks if an inline or modal error message is visible and matches optional expected text."""
