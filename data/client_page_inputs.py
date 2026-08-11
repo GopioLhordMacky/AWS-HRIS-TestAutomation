@@ -1,4 +1,4 @@
-from imports.main_imports.main_imports import *
+from imports.main_imports import *
 
 class ClientFormData:
     VALID_INDUSTRY = "Automotive"

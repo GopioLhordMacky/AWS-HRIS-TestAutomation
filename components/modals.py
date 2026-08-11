@@ -1,5 +1,5 @@
-from imports.main_imports.main_imports import *
-from locators.shared.shared_locators import ModalLocators
+from imports.main_imports import *
+from locators.shared_locators import ModalLocators
 from pages.base_page import BasePage
 
 class Modals(BasePage):

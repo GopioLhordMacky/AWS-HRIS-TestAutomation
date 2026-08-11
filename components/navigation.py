@@ -1,7 +1,7 @@
-from locators.shared.shared_locators import LoginLocators
-from locators.shared.shared_locators import TabNavigationLocators
-from locators.shared.shared_locators import ViewModeLocators
-from imports.main_imports.main_imports import *
+from locators.shared_locators import LoginLocators
+from locators.shared_locators import TabNavigationLocators
+from locators.shared_locators import ViewModeLocators
+from imports.main_imports import *
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 import time

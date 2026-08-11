@@ -4,12 +4,13 @@ from selenium.common.exceptions import TimeoutException
 from locators.client_page_locators import *
 from data.client_page_inputs import *
 from pages.client_page import *
-from imports.main_imports.main_imports import *
+from imports.main_imports import *
 from imports.client_page_imports import *
 from pages.base_page import BasePage
 from components.tables import Table
 from components.elements import Element
 from components.modals import Modals
+from components.navigation import Navigation
 
 class ClientPage(BasePage):
     
@@ -343,6 +344,7 @@ class ClientPage(BasePage):
 
     def get_initial_contact_person(self, row_idx: int = 1) -> str:
         return self.get_table_cell_value_client("Contact Person", row_idx)
+    
     def count_table_rows_client(self):
         """Returns count of visible rows in table."""
         return self.table.count_table_rows()

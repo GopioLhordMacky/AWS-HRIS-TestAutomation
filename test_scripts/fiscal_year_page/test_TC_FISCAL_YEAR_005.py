@@ -1,24 +1,14 @@
-import pytest
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from helpers import login_helper, open_add_fiscal_year_modal, setup_browser
+import time
+from utils.navigation_helpers import go_to_fiscal_year_page
 
-@pytest.mark.ui
-def test_TC_FE_FISCAL_YEAR_005(setup_browser):
-    """
-    TC_FE_FISCAL_YEAR_005 (Functional)
-    Verify that clicking the '+ Add Fiscal Year' button opens the Add Fiscal Year modal pop-up.
-    """
-    driver = setup_browser
-    wait = WebDriverWait(driver, 10)
 
-    login_helper(driver)
+class TestFiscalYearPage:
 
-    open_add_fiscal_year_modal(driver)
+    def test_tc_fe_fiscal_year_005(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    # Verification: 'Add Fiscal Year' modal popped up successfully
-    modal_title = wait.until(
-        EC.visibility_of_element_located((By.XPATH, "//div[contains(@class, 'modal-body') or contains(text(), 'Add Fiscal Year')]"))
-    )
-    assert modal_title.is_displayed(), "The 'Add Fiscal Year' modal did not pop up after clicking the button."
+        # Step 1: Click the "+ Add Fiscal Year" button
+        assert page.click_add_fiscal_year_button(), "Failed to click the '+ Add Fiscal Year' button."
+
+        # Step 2: Verify the 'Add Fiscal Year' modal pops up
+        assert page.is_fiscal_year_modal_visible(), "The 'Add Fiscal Year' modal failed to pop up."

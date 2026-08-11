@@ -3,7 +3,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from locators.client_page_locators import *
-from imports.main_imports.main_imports import *
+from imports.main_imports import *
 from components.tables import Table
 from pages.base_page import BasePage
 

@@ -1,8 +1,8 @@
-from locators.shared.shared_locators import CommonTableLocators
-from locators.shared.shared_locators import SearchLocators
-from locators.shared.shared_locators import DropdownLocators
-from locators.shared.shared_locators import TreeTableLocators
-from imports.main_imports.main_imports import *
+from locators.shared_locators import CommonTableLocators
+from locators.shared_locators import SearchLocators
+from locators.shared_locators import DropdownLocators
+from locators.shared_locators import TreeTableLocators
+from imports.main_imports import *
 from pages.base_page import BasePage
 
 class Table(BasePage):

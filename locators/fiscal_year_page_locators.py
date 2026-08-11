@@ -1,7 +1,6 @@
 from selenium.webdriver.common.by import By
-
-
 class Login_Locators:
+    FISCAL_YEAR_TITLE = (By.XPATH, "//h2[text() = 'Fiscal Year']")
     USERNAME_FIELD = (By.XPATH, "//input[@name='email']")
     PASSWORD_FIELD = (By.XPATH, "//input[@name='password']")
     LOGIN_BUTTON = (By.XPATH, "//button[contains(@class, 'login-btn')]")

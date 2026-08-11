@@ -1,5 +1,5 @@
 from utils.navigation_helpers import go_to_client_page
-from locators.shared.shared_locators import PaginationLocators
+from locators.shared_locators import PaginationLocators
 import time
 
 class TestClientPage:

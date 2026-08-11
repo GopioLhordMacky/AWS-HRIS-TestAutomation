@@ -21,7 +21,7 @@ from selenium.common.exceptions import (
 # ==========================================
 # SHARED LOCATORS
 # ==========================================
-from locators.shared.shared_locators import (
+from locators.shared_locators import (
     LoginLocators,
     CommonTableLocators,
     SearchLocators,
