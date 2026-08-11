@@ -12,8 +12,7 @@ class TestClientPage:
 
         time.sleep(2)
 
+        is_clean, errors = page.check_console_error_client()
+
         # Checks for errors, prints them if present, and asserts result
-        assert page.check_console_error_client(), (
-            "Severe console errors detected upon page load."
-        )
-        print("\nSUCCESS: No severe console errors detected during load.")
+        assert is_clean, f"Console error test failed! Errors found: {errors}"

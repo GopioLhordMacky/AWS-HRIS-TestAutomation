@@ -29,10 +29,11 @@ class BasePage:
     # 1. CORE ELEMENT LOCATORS & SEARCH (Cleaned & Standardized)
     # =========================================================================
 
-    def get_browser_console_errors(self) -> bool:
+    def get_browser_console_errors(self) -> tuple[bool, list]:
         """
-        Retrieves browser logs, prints any severe/error messages, and verifies status.
-        :return: True if NO console errors exist (clean console), False if errors are detected.
+        Retrieves browser logs and checks for severe console errors.
+        
+        :return: (True, []) if clean, or (False, [error_list]) if errors/exceptions occur.
         """
         try:
             # Fetch browser console logs
@@ -47,15 +48,16 @@ class BasePage:
             if errors:
                 print(f"\n[CONSOLE ERRORS DETECTED] ({len(errors)} error(s) found):")
                 for index, err in enumerate(errors, 1):
-                    # Prints timestamp, level, and error message
                     print(f"  {index}. [{err.get('level')}] {err.get('message')}")
-                return False
+                return False, errors
                 
-            return True
+            return True, []
             
         except Exception as e:
-            print(f"[WARNING] Could not retrieve browser logs: {e}")
-            return True
+            error_msg = f"Could not retrieve browser logs: {e}"
+            print(f"[WARNING] {error_msg}")
+            # Return False so tests don't silently pass when log fetching fails
+            return False, [error_msg]
     
     def find_element(self, locator):
         """

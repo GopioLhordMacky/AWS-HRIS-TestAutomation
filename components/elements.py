@@ -11,6 +11,7 @@ class Element(BasePage):
 
     def __init__(self, driver):
         super().__init__(driver)
+        self.table = Table(driver)   
 
     def is_component_visible(self, locator):
         try:
@@ -140,10 +141,10 @@ class Element(BasePage):
             raise
 
     def toggle_active_status(self, row_index, column_name="Active"):
-        col_idx = self.get_column_index(column_name)
+        col_idx = self.table.get_column_index(column_name)
         self.wait_for_and_click(ToggleSwitchLocators.TOGGLE_BY_ROW_AND_COL(row_index, col_idx))
 
     def verify_active_toggle_state(self, row_index, column_name="Active"):
-        col_idx = self.get_column_index(column_name)
+        col_idx = self.table.get_column_index(column_name)
         element = self.driver.find_element(*ToggleSwitchLocators.TOGGLE_BY_ROW_AND_COL(row_index, col_idx))
         return element.is_selected()

@@ -9,7 +9,7 @@ class TestClientPage:
         target_dropdown = "Industry"
         target_industry = "Automotive"
         # Step 1: Select "Information Technology Services" from the Industry filter dropdown
-        page.select_industry_filter_dropdown_client(target_industry)
+        page.select_industry_filter_client(target_industry)
         time.sleep(3)
 
         # Step 2: Verify that all table rows across all pages match the selected industry

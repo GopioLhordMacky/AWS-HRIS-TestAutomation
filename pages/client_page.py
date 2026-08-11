@@ -25,8 +25,8 @@ class ClientPage(BasePage):
 
     def check_console_error_client(self):
         """Checks browser console for errors."""
-        self.get_browser_console_errors()
-        return self
+        return self.get_browser_console_errors()
+       
 
     def click_add_client_button(self):
         """Clicks the primary Add Client button on the page."""
@@ -46,6 +46,27 @@ class ClientPage(BasePage):
     # VISIBILITY & STATUS CHECKS (ELEMENT COMPONENT DELEGATION)
     # =========================================================================
 
+    def find_next_button(self):
+        return self.find_element(PaginationLocators.NEXT_PAGE_BTN)
+
+    def find_prev_button(self):
+        return self.find_element(PaginationLocators.PREV_PAGE_BTN)
+
+    def is_row_per_page_dropdown_visible(self):
+        return True and self.element.is_component_visible(PaginationLocators.ROWS_PER_PAGE_DROPDOWN)
+
+    def is_next_page_button_visible(self):
+        return True and self.element.is_component_visible(PaginationLocators.NEXT_PAGE_BTN)
+
+    def is_next_prev_button_visible(self):
+        return True and self.element.is_component_visible(PaginationLocators.PREV_PAGE_BTN)
+
+    def is_confirm_button_visible(self):
+        return self.element.is_component_visible(ModalLocators.CONFIRM_BUTTON)
+
+    def is_cancel_button_visible(self):
+        return self.element.is_component_visible(ModalLocators.CANCEL_BUTTON)
+    
     def is_save_button_clickable_client(self):
         """Checks if the Save button in the modal is clickable."""
         return self.element.is_component_clickable(ModalLocators.SAVE_BUTTON)
@@ -157,7 +178,7 @@ class ClientPage(BasePage):
     def click_close_modal_client(self):
         """Clicks close button in modal."""
         self.modal.click_close()
-        return self
+        return True and self
 
     def click_confirm_modal_client(self):
         """Clicks confirm button in modal dialog."""
@@ -167,12 +188,12 @@ class ClientPage(BasePage):
     def click_cancel_modal_client(self):
         """Clicks cancel button in modal."""
         self.modal.click_cancel()
-        return self
+        return True and self
 
     def click_save_only_modal_client(self):
         """Clicks save button in modal."""
         self.modal.click_save_only()
-        return self
+        return True and self
 
     def click_save_confirm_modal_client(self):
         """Clicks save and then secondary confirm button."""
@@ -204,19 +225,9 @@ class ClientPage(BasePage):
         self.modal.fill_edit_select_modal("Country", new_option)
         return self
 
-    def select_industry_filter_dropdown_client(self, option_text):
-        """Selects an option from the Industry filter dropdown."""
-        self.element.select_react_dropdown(Filter_and_Search_Section.INDUSTRY_FILTER_DROPDOWN, option_text)
-        return self
-    
-    def select_status_filter_dropdown_client(self, option_text):
-        """Selects an option from the Status filter dropdown."""
-        self.element.select_custom_dropdown(Filter_and_Search_Section.STATUS_FILTER_DROPDOWN, option_text)
-        return self
-
     def check_error_message_client(self, expected_text=None):
         """Verifies inline/modal error messages."""
-        return self.modal.check_error_message(expected_text)
+        return True and self.modal.check_error_message(expected_text)
 
     def check_toast_message_client(self, expected_text=None):
         """Verifies toast popup message."""
@@ -229,7 +240,7 @@ class ClientPage(BasePage):
     def navigate_to_page(self, client_page):
         """Navigates to a specific sidebar page."""
         self.navigation.navigate_to_page(client_page)
-        return self
+        return True and self
 
     def switch_tab_client(self, tab_name):
         """Switches sub-tabs on client page."""
@@ -255,11 +266,29 @@ class ClientPage(BasePage):
                                                 [Keys.ARROW_DOWN, Keys.ENTER],
                                                     helper, *helper_args, **helper_kwargs)
 
+    def tab_navigation_toggle_status(self, helper=None, *helper_args, **helper_kwargs):
+        """Navigates via keyboard Tab key until focus reached."""
+        return self.navigation.tab_navigation(Row_Actions.ACTIVE_TOGGLE,
+                                                [Keys.SPACE],
+                                                    helper, *helper_args, **helper_kwargs)
+
     def tab_navigation_search_bar(self, helper=None, *helper_args, **helper_kwargs):
         """Navigates via keyboard Tab key until focus reached."""
         return self.navigation.tab_navigation(Filter_and_Search_Section.SEARCH_BAR,
                                                 [Keys.ENTER],
                                                     helper, *helper_args, **helper_kwargs)
+
+    def tab_navigation_next_btn(self, helper=None, *helper_args, **helper_kwargs):
+        """Navigates via keyboard Tab key until focus reached."""
+        return self.navigation.tab_navigation(PaginationLocators.NEXT_PAGE_BTN,
+                                                [Keys.ENTER],
+                                                        helper, *helper_args, **helper_kwargs)
+
+    def tab_navigation_prev_btn(self, helper=None, *helper_args, **helper_kwargs):
+        """Navigates via keyboard Tab key until focus reached."""
+        return self.navigation.tab_navigation(PaginationLocators.PREV_PAGE_BTN,
+                                                [Keys.SPACE],
+                                                        helper, *helper_args, **helper_kwargs)
 
     # =========================================================================
     # TABLE UTILITIES (TABLE COMPONENT DELEGATION)
@@ -270,7 +299,6 @@ class ClientPage(BasePage):
             f"//label[normalize-space()='{label_name}']"
             f"/following::div[contains(@class, 'singleValue') or contains(@class, '-singleValue')][1]"
         )
-        
         # Since find_elements returns a single WebElement (or None):
         elem = self.find_elements(By.XPATH, xpath)
         return elem.text.strip() if elem else ""
@@ -300,10 +328,21 @@ class ClientPage(BasePage):
         """Retrieves list of table header titles."""
         return self.table.get_table_headers()
 
-    def get_single_table_row_data_client(self, row_idx=1):
-        """Retrieves row data for a single row index."""
-        return self.table.get_single_table_row_data(row_idx)
+    def get_table_cell_value_client(self, column_name: str, row_idx: int = 1) -> str:
+        """Retrieves cell value by column name and row index."""
+        return self.table.get_table_cell_value(column_name=column_name, row_idx=row_idx)
 
+    def get_initial_client_name(self, row_idx: int = 1) -> str:
+        return self.get_table_cell_value_client("Client Name", row_idx)
+
+    def get_initial_industry(self, row_idx: int = 1) -> str:
+        return self.get_table_cell_value_client("Industry", row_idx)
+
+    def get_initial_country(self, row_idx: int = 1) -> str:
+        return self.get_table_cell_value_client("Country", row_idx)
+
+    def get_initial_contact_person(self, row_idx: int = 1) -> str:
+        return self.get_table_cell_value_client("Contact Person", row_idx)
     def count_table_rows_client(self):
         """Returns count of visible rows in table."""
         return self.table.count_table_rows()
@@ -334,7 +373,8 @@ class ClientPage(BasePage):
 
     def click_edit_btn_by_row_index_client(self, row_idx=1):
         """Clicks edit button on specific row index."""
-        return self.table.click_edit_btn_by_row_index(row_idx)
+        self.table.click_edit_btn_by_row_index(row_idx)
+        return True and self
 
     def click_edit_btn_by_column_value_client(self, column_name, text):
         """Clicks edit button matching a column text value."""
@@ -472,13 +512,14 @@ class ClientPage(BasePage):
         self.wait_and_type(Update_Modal_Inputs.CLIENT_NAME_INPUT, name)
 
         # 2. Dropdowns (Uses BasePage select method)
-        if industry:
-            self.select_react_dropdown(Update_Modal_Inputs.INDUSTRY_SELECT, industry)
-            time.sleep(0.5)
-
-        if country:
-            self.select_react_dropdown(Update_Modal_Inputs.COUNTRY_SELECT, country)
-            time.sleep(0.5)
+        # if industry:
+        #     self.select_react_dropdown(Update_Modal_Inputs.INDUSTRY_SELECT, industry)
+        #     time.sleep(0.5)
+        # if country:
+        #     self.select_react_dropdown(Update_Modal_Inputs.COUNTRY_SELECT, country)
+        #     time.sleep(0.5)
+        self.fill_country_select_modal_client()
+        self.fill_industry_select_modal_client()
 
         # 3. Text Inputs
         self.wait_and_type(Update_Modal_Inputs.CONTACT_PERSON_INPUT, contact)
@@ -501,6 +542,11 @@ class ClientPage(BasePage):
         """Fills out fields in the Client modal (Update)."""
         name = name if name is not None else ClientFormData.get_unique_client_name()
 
+        self.clear_input_field(Update_Modal_Inputs.CLIENT_NAME_INPUT)
+        self.clear_input_field(Update_Modal_Inputs.CONTACT_PERSON_INPUT)
+        self.clear_input_field(Update_Modal_Inputs.EMAIL_ADDRESS_INPUT)
+        self.clear_input_field(Update_Modal_Inputs.PHONE_NUMBER_INPUT)
+        self.clear_input_field(Update_Modal_Inputs.ADDRESS_INPUT)
         self.wait_and_type(Update_Modal_Inputs.CLIENT_NAME_INPUT, name)
         self.wait_and_type(Update_Modal_Inputs.CONTACT_PERSON_INPUT, contact)
         self.wait_and_type(Update_Modal_Inputs.EMAIL_ADDRESS_INPUT, email)

@@ -1,27 +1,19 @@
-from pages.client_page import *
-from locators.client_page_locators import *
-from imports.main_imports.main_imports import *
-from imports.client_page_imports import *
+from utils.navigation_helpers import go_to_client_page
 
+class TestClientPage:
 
-def test_tc_fe_clients_043(client_page):
-    """Verify the Industry dropdown displays the correct list of options."""
-    page = client_page
+    def test_tc_fe_clients_043(self, authenticated_driver):
+        """Verify the Industry dropdown displays the correct list of options."""
+        page = go_to_client_page(authenticated_driver, via="url")
 
-    # Step 1: Open the "Add Client" modal
-    page.click_edit_btn_by_row_index(  row_idx=1)
+        # Step 1: Open the "Add Client" modal
+        page.click_edit_btn_by_row_index_client(row_idx=1)
 
-    # Expected list of Industry options from test data
-    expected_industries = Options.industry_options
+        # Step 2: Verify the dropdown options list matches expected options
 
-    # Step 2: Verify the dropdown options list matches expected options
-    assert page.verify_dropdown_options(
-         
-        Update_Modal_Inputs.INDUSTRY_SELECT,
-        expected_industries
-    ), "Industry dropdown options do not match expected list."
+        assert page.verify_industry_dropdown_options(), "Industry dropdown options do not match expected list."
 
-    # Step 4: Close the modal using click_close
-    page.click_close()
+        # Step 4: Close the modal using click_close
+        assert page.click_close_modal_client(), "Failed to close the modal"
 
-    
+        

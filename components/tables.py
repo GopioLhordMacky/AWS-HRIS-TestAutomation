@@ -39,6 +39,27 @@ class Table(BasePage):
         )
         return elems[0].text.strip() if elems else ""
 
+    def get_table_cell_value(self, column_name: str, row_idx: int = 1) -> str:
+        """
+        Retrieves the text content of a specific table cell based on column name and row index.
+        """
+        # 1. Find column index dynamically (1-based index)
+        # Assumes get_table_headers returns a list of header strings like ["Client Name", "Industry", ...]
+        headers = self.get_table_headers() if hasattr(self, "get_table_headers") else []
+        
+        try:
+            # Match column name (case-insensitive & trimmed)
+            col_idx = [h.strip().lower() for h in headers].index(column_name.strip().lower()) + 1
+            
+            # 2. Locate and return the cell text directly via XPath
+            xpath = f"//tbody/tr[{row_idx}]/td[{col_idx}]"
+            elem = self.find_elements(By.XPATH, xpath)
+            return elem.text.strip() if elem else ""
+            
+        except ValueError:
+            print(f"[WARNING] Column header '{column_name}' not found in table headers: {headers}")
+            return ""
+        
     def check_column_cells(self, column_name):
         col_idx = self.get_column_index(column_name)
         rows = self.driver.find_elements(*CommonTableLocators.TABLE_ROWS)
