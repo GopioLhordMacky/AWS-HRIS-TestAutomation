@@ -1,48 +1,21 @@
-import pytest
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from helpers import login_helper, open_add_fiscal_year_modal, setup_browser
-from locators import Buttons, Options, Confirmation_Dialogue
+import time
+from utils.navigation_helpers import go_to_fiscal_year_page
 
-@pytest.mark.functionality
-def test_TC_FE_FISCAL_YEAR_008(setup_browser):
-    driver = setup_browser
-    wait = WebDriverWait(driver, 10)
 
-    # Pre-conditions: User logged in and "Add Fiscal Year" modal is open
-    login_helper(driver)
-    open_add_fiscal_year_modal(driver)
+class TestFiscalYearPage:
 
-    # Step 1: Leave Start Month empty (clear any existing text)
-    start_date_input = wait.until(
-        EC.element_to_be_clickable((By.XPATH, Options.START_DATE))
-    )
-    
-    # Select all and delete to guarantee the field is empty
-    start_date_input.send_keys(Keys.CONTROL + "a")
-    start_date_input.send_keys(Keys.BACKSPACE)
+    def test_tc_fe_fiscal_year_008(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    # Step 2: Click the Save button
-    save_button = wait.until(
-        EC.element_to_be_clickable((By.XPATH, Buttons.SAVE_BUTTON))
-    )
-    save_button.click()
+        # Open 'Add Fiscal Year' modal
+        assert page.click_add_fiscal_year_button(), "Failed to click the '+ Add Fiscal Year' button."
+        assert page.is_fiscal_year_modal_visible(), "The 'Add Fiscal Year' modal failed to pop up."
 
-    alert_message = wait.until(
-        EC.visibility_of_element_located((By.XPATH, Confirmation_Dialogue.START_DATE_REQUIRED))
-    )
-    assert alert_message.is_displayed(), "Validation alert message is not displayed."
+        # Step 1: Leave the Start Month empty & Step 2: Click the Save button
+        assert page.click_save_only_modal_fiscal_year(), "Failed to click Save button."
 
-    expected_text = "Start Date is required!".lower()
-    actual_text = alert_message.text.lower()
+        # Expected Result 1: Validation message appears ("Start Date is Required!")
+        assert page.check_error_message_fiscal_year("Start Date is Required!"), "Expected validation message 'Start Date is Required!' was not displayed."
 
-    assert expected_text in actual_text, (
-        f"Expected alert text containing '{expected_text}', but got '{actual_text}' (case-insensitive check)"
-    )
-
-    modal_title = driver.find_element(By.XPATH, "//div[@class='modal-content']")
-    assert modal_title.is_displayed(), "Modal should remain open after validation error, but was closed."
-
-    
+        # Expected Result 2: The modal stays open and empty data is not saved
+        assert page.is_fiscal_year_modal_visible(), "The modal closed unexpectedly after submitting empty fields."

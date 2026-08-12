@@ -1,41 +1,23 @@
-import pytest
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
-from helpers import (
-    setup_browser, 
-    login_helper, 
-    select_status, 
-    fill_search_field,
-    verify_table_search_results    
-)
-from locators import Options, Table
+import time
+from utils.navigation_helpers import go_to_fiscal_year_page
 
-@pytest.mark.functionality
-def test_TC_FE_FISCAL_YEAR_018(setup_browser):
-    driver = setup_browser
-    wait = WebDriverWait(driver, 10)
-    actions = ActionChains(driver)
 
-    # --- Pre-condition ---
-    login_helper(driver)
+class TestFiscalYearPage:
 
-    # --- Step 1: Reachability - Navigate to Search bar via TAB ---
-    actions.send_keys(Keys.TAB).perform()
+    def test_tc_fe_fiscal_year_018(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    search_input_el = wait.until(EC.presence_of_element_located((By.XPATH, Options.SEARCH_FIELD)))
-    
-    # Fallback to click if focus didn't shift directly
-    if driver.switch_to.active_element != search_input_el:
-        search_input_el.click()
+        # Step 1 to 4: Tab navigate to the search bar, enter keyword 'DX', press ENTER, and filter
+        assert page.tab_navigation_search_bar(), "Failed to navigate to Search bar using TAB key."
 
-    # --- Step 2: Populate search field using default string ---
-    fill_search_field(driver)
+        # Verify search results updated accordingly for 'DX'
+        assert page.check_table_data_by_search_fiscal_year("FY Code", "2026"), (
+            "Table failed to filter results properly after keyboard search for 'DX'."
+        )
 
-    # --- Step 3: Trigger filtering via ENTER key ---
-    search_input_el.send_keys(Keys.ENTER)
-
-    # --- Step 4: Verify table state using new helper ---
-    verify_table_search_results(driver)
+        assert page.clear_search_bar(), "Failed to clear input field"
+        
+        # Verify invalid search via keyboard shows empty state
+        assert page.check_table_verify_no_results_fiscal_year("TESTING"), (
+            "Table failed to show 'No results found' after searching 'TESTING' via keyboard."
+        )

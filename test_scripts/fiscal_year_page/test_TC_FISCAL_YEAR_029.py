@@ -1,36 +1,30 @@
 import time
-from plugins import *
-from Fiscal_Year_Page.helper_categ.pagination_helpers import (
-    change_rows_per_page,
-    get_displayed_row_count,
-    get_pagination_text
-)
-from helpers import *
+from utils.navigation_helpers import go_to_fiscal_year_page
+from selenium.webdriver.common.by import By
 
-@pytest.mark.ui
-def test_TC_FE_FISCAL_YEAR_029(setup_browser):
-    driver = setup_browser
 
-    # --- Pre-condition ---
-    login_helper(driver)
-    select_status(driver, status="Active")
-    time.sleep(2)
+class TestFiscalYearPage:
 
-    # Options to test
-    rows_per_page_options = [10, 20, 50, 100]
+    def test_tc_fe_fiscal_year_029(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    for limit in rows_per_page_options:
-        # Step 1 & 2: Select new rows per page option
-        change_rows_per_page(driver, limit)
 
-        # Step 3: Verify displayed rows logic
-        actual_rows = get_displayed_row_count(driver)
-        pagination_text = get_pagination_text(driver)
+        expected_counts = [10, 20, 50, 100]
 
-        # Assert rows visible are <= limit (can be less on the last page or small datasets)
-        assert actual_rows <= limit, (
-            f"Expected table rows to be <= {limit}, but found {actual_rows} rows."
-        )
+        # Step 2: Iterate through options and verify table updates dynamically
+        for count in expected_counts:
+            page.change_rows_per_page_fiscal_year(count)
+            time.sleep(1.5)
 
-        # Verify pagination text reflects active size change
-        assert pagination_text != "", "Pagination range text should not be empty."
+            # Get updated pagination text and visible row count
+            updated_pag_info = page.get_pagination_information_fiscal_year()
+            visible_rows = len(page.find_elements_len(By.XPATH, "//tbody/tr"))
+
+            # Assertions
+            assert visible_rows <= count, (
+                f"Displayed table rows ({visible_rows}) exceed selected limit ({count})!"
+            )
+            assert updated_pag_info is not None and len(updated_pag_info) > 0, (
+                f"Pagination info is empty after setting rows per page to {count}!"
+            )
+

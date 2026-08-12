@@ -1,62 +1,61 @@
 import time
-from plugins import *
-from Fiscal_Year_Page.helper_categ.pagination_helpers import (
-    get_pagination_text,
-    go_to_next_page,
-    go_to_previous_page,
-    get_first_row_text,
-    change_rows_per_page,
-    wait_for_valid_pagination
-)
-from helpers import *
+from utils.navigation_helpers import go_to_fiscal_year_page
 
-@pytest.mark.ui
-def test_TC_FE_FISCAL_YEAR_027(setup_browser):
-    driver = setup_browser
 
-    # --- Pre-condition ---
-    login_helper(driver)
-    select_status(driver, status="Inactive")
-    time.sleep(5)
-    
-    # Standardize baseline rows per page & wait for table to settle
-    change_rows_per_page(driver, 10)
-    wait_for_valid_pagination(driver)
+class TestFiscalYearPage:
 
-    # Capture Page 1 initial state
-    initial_page_text = get_pagination_text(driver)
-    initial_first_row = get_first_row_text(driver)
+    def test_tc_fe_fiscal_year_027(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    # --- Step 1 & 2: Click Next (>) and verify updates ---
-    go_to_next_page(driver)
-    wait_for_valid_pagination(driver)
-    
-    page2_text = get_pagination_text(driver)
-    page2_first_row = get_first_row_text(driver)
+        # Step 1: Record initial pagination info on Page 1
+        time.sleep(3)
+        initial_pag_info = page.get_pagination_information_fiscal_year()
 
-    # Assert range text changed
-    assert page2_text != initial_page_text, (
-        f"Expected page range text to change on Next page, but remained '{initial_page_text}'"
-    )
+        # Step 2: Navigate to Next Page
+        page.go_to_next_page_fiscal_year()
+        time.sleep(1)
 
-    # Assert row content updated
-    assert page2_first_row != initial_first_row, (
-        "Expected first row record to update after navigating to Next page."
-    )
+        # Step 3: Capture and verify updated pagination info
+        next_pag_info = page.get_pagination_information_fiscal_year()
+        assert next_pag_info != initial_pag_info, (
+            f"Pagination info did not update after clicking Next! "
+            f"Initial: '{initial_pag_info}' | Current: '{next_pag_info}'"
+        )
 
-    # --- Step 3 & 4: Click Previous (<) and verify returning to Page 1 ---
-    go_to_previous_page(driver)
-    wait_for_valid_pagination(driver)
+        # Step 4: Navigate back using Previous Page button
+        page.go_to_prev_page_fiscal_year()
+        time.sleep(3)
 
-    page1_returned_text = get_pagination_text(driver)
-    page1_returned_first_row = get_first_row_text(driver)
+        # Step 5: Capture and verify pagination returned to initial state
+        prev_pag_info = page.get_pagination_information_fiscal_year()
+        assert prev_pag_info == initial_pag_info, (
+            f"Pagination info failed to return to initial range after clicking Previous! "
+            f"Expected: '{initial_pag_info}' | Got: '{prev_pag_info}'"
+        )
 
-    # Assert returned range matches initial Page 1 range
-    assert page1_returned_text == initial_page_text, (
-        f"Expected pagination range to return to '{initial_page_text}', but got '{page1_returned_text}'"
-    )
+        # Step 1: Record initial pagination info on Page 1
+        time.sleep(3)
+        initial_pag_info = page.get_pagination_information_fiscal_year()
 
-    # Assert row content matches initial Page 1 row
-    assert page1_returned_first_row == initial_first_row, (
-        "Expected table content to revert back to initial Page 1 records."
-    )
+        # Step 2: Navigate to Next Page
+        page.go_to_next_page_fiscal_year()
+        time.sleep(1)
+
+        # Step 3: Capture and verify updated pagination info
+        next_pag_info = page.get_pagination_information_fiscal_year()
+        assert next_pag_info != initial_pag_info, (
+            f"Pagination info did not update after clicking Next! "
+            f"Initial: '{initial_pag_info}' | Current: '{next_pag_info}'"
+        )
+
+        # Step 4: Navigate back using Previous Page button
+        page.go_to_prev_page_fiscal_year()
+        time.sleep(3)
+
+        # Step 5: Capture and verify pagination returned to initial state
+        prev_pag_info = page.get_pagination_information_fiscal_year()
+        assert prev_pag_info == initial_pag_info, (
+            f"Pagination info failed to return to initial range after clicking Previous! "
+            f"Expected: '{initial_pag_info}' | Got: '{prev_pag_info}'"
+        )
+

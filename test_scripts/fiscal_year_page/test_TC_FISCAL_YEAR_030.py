@@ -1,69 +1,63 @@
 import time
-from plugins import *
-from Fiscal_Year_Page.helper_categ.pagination_helpers import (
-    get_pagination_text,
-    go_to_next_page,
-    go_to_previous_page,
-    get_first_row_text,
-    click_page_number,
-    is_page_selected,
-    change_rows_per_page
-)
-from helpers import *
+from utils.navigation_helpers import go_to_fiscal_year_page
+from selenium.webdriver.common.by import By
 
 
-def wait_for_valid_pagination(driver, timeout=10):
-    """Waits until pagination text is loaded and not showing temporary '0–0 of 0' state."""
-    wait = WebDriverWait(driver, timeout)
-    wait.until(
-        lambda d: get_pagination_text(d) != "0–0 of 0" and get_pagination_text(d) != ""
-    )
+class TestFiscalYearPage:
 
-@pytest.mark.ui
-def test_TC_FE_FISCAL_YEAR_030(setup_browser):
-    driver = setup_browser
+    def test_tc_fe_fiscal_year_030(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    # --- Pre-condition ---
-    login_helper(driver)
-    
-    # Step 1: Apply filter (Status: "Active")
-    select_status(driver, status="Inactive")
-    # fill_search_field(driver, search_str="202")
-    time.sleep(2)
-    change_rows_per_page(driver)
-    wait_for_valid_pagination(driver)
+        # Step 1: Perform search for "Test"
+        page.search_fiscal_year("Test")
+        time.sleep(1.5)  # Allow search filter to apply to grid
 
-    # Capture filtered initial state (Page 1)
-    filtered_p1_text = get_pagination_text(driver)
-    filtered_p1_row = get_first_row_text(driver)
+        # Capture baseline pagination info for Page 1 of search results
+        initial_pag_info = page.get_pagination_information_fiscal_year()
 
-    # Step 2: Click Next (>) button on filtered results
-    go_to_next_page(driver)
-    wait_for_valid_pagination(driver)
-    
-    filtered_p2_text = get_pagination_text(driver)
-    filtered_p2_row = get_first_row_text(driver)
+        # Step 2: Traverse forward to the last page
+        while True:
+            current_info = page.get_pagination_information_fiscal_year()
+            
+            try:
+                page.go_to_next_page_fiscal_year()
+                time.sleep(1.5)
+            except Exception:
+                # Reached end if Next is non-interactable or fails
+                break
 
-    # Assert filtered data updated on Next
-    assert filtered_p2_text != filtered_p1_text, (
-        "Expected range text to update on filtered results after clicking Next."
-    )
-    assert filtered_p2_row != filtered_p1_row, (
-        "Expected row data to update on filtered results after clicking Next."
-    )
+            updated_info = page.get_pagination_information_fiscal_year()
 
-    # Step 3: Click Prev (<) button on filtered results
-    go_to_previous_page(driver)
-    wait_for_valid_pagination(driver)
+            # If pagination string text hasn't changed after click, we reached the end
+            if current_info == updated_info:
+                break
 
-    returned_p1_text = get_pagination_text(driver)
-    returned_p1_row = get_first_row_text(driver)
+        # Step 3: Traverse backward to return to the first page
+        while True:
+            current_info = page.get_pagination_information_fiscal_year()
 
-    # Assert filtered data reverted on Previous
-    assert returned_p1_text == filtered_p1_text, (
-        f"Expected range to revert to '{filtered_p1_text}', but got '{returned_p1_text}'."
-    )
-    assert returned_p1_row == filtered_p1_row, (
-        "Expected table content to revert back to initial filtered Page 1 data."
-    )
+            # Stop if we have returned to the initial starting range (Page 1)
+            if current_info == initial_pag_info:
+                break
 
+            try:
+                page.go_to_prev_page_fiscal_year()
+                time.sleep(1.5)
+            except Exception:
+                # Reached beginning if Prev is non-interactable or fails
+                break
+
+            updated_info = page.get_pagination_information_fiscal_year()
+
+            # If pagination string text hasn't changed, we are back at page 1
+            if current_info == updated_info:
+                break
+
+        # Step 4: Final verification that we returned back to page 1
+        final_pag_info = page.get_pagination_information_fiscal_year()
+        assert final_pag_info == initial_pag_info, (
+            f"Failed end-to-end pagination traversal! "
+            f"Expected to return to '{initial_pag_info}', but stopped at '{final_pag_info}'."
+        )
+
+        

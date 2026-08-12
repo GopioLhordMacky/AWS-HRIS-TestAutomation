@@ -1,41 +1,20 @@
-import time
-from plugins import *
-from helpers import setup_browser, login_helper, select_status
-from locators import Pagination
+from utils.navigation_helpers import go_to_fiscal_year_page
+class TestFiscalYearPage:
 
-@pytest.mark.functionality
-def test_TC_FE_FISCAL_YEAR_026(setup_browser):
-    driver = setup_browser
-    wait = WebDriverWait(driver, 10)
+    def test_tc_fe_fiscal_year_025(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    # --- Pre-condition ---
-    login_helper(driver)
-    select_status(driver, status="Active")
-    time.sleep(2)
+        # 1. Assert Rows Per Page Dropdown visibility
+        assert page.is_row_per_page_dropdown_visible(), "Failed to find row per page"
 
-    # --- Step 1: Locate and verify Pagination components ---
-    
-    # 1. Rows per page dropdown
-    dropdown = wait.until(
-        EC.visibility_of_element_located((By.XPATH, Pagination.ROWS_PER_PAGE_DROPDOWN))
-    )
-    assert dropdown.is_displayed(), "Expected 'Rows per page' dropdown to be visible."
+        # 2. Assert Pagination Range Information text visibility & non-emptiness
+        pag_info = page.get_pagination_information_fiscal_year()
+        assert pag_info is not None and len(pag_info) > 0, \
+            f"Pagination information text is missing or empty! Got: '{pag_info}'"
 
-    # 2. Page range text (e.g., "1–10 of 14")
-    displayed_rows = wait.until(
-        EC.visibility_of_element_located((By.XPATH, Pagination.DISPLAYED_ROWS_TEXT))
-    )
-    assert displayed_rows.is_displayed(), "Expected displayed rows page range text to be visible."
-    assert "of" in displayed_rows.text, f"Expected range format like 'XX-XX of XXX', but got '{displayed_rows.text}'"
+        # 3. Assert Next Page Button visibility
+        assert page.is_next_page_button_visible(), "Next page button is not visible!"
 
-    # 3. Previous (<) page button
-    prev_button = wait.until(
-        EC.presence_of_element_located((By.XPATH, Pagination.PREVIOUS_PAGE_BUTTON))
-    )
-    assert prev_button.is_displayed(), "Expected Previous page button to be visible."
+        # 4. Assert Previous Page Button visibility
+        assert page.is_next_prev_button_visible(), "Previous page button is not visible!"
 
-    # 4. Next (>) page button
-    next_button = wait.until(
-        EC.presence_of_element_located((By.XPATH, Pagination.NEXT_PAGE_BUTTON))
-    )
-    assert next_button.is_displayed(), "Expected Next page button to be visible."

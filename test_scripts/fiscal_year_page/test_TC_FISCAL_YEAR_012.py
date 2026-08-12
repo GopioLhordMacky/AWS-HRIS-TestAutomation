@@ -1,59 +1,38 @@
-import pytest
-from plugins import *
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from helpers import (
-    setup_browser, 
-    login_helper, 
-    open_add_fiscal_year_modal, 
-    fill_start_date,
-    select_status
-)
-from locators import Options, Table, Buttons, Confirmation_Dialogue
+import time
+from data.fiscal_year_page_inputs import FillStartDate
+from utils.navigation_helpers import go_to_fiscal_year_page
 
-## This test might fail if the helpers are not updated to input unlisted Start Date 
 
-@pytest.mark.ui
-def test_TC_FE_FISCAL_YEAR_012(setup_browser):
-    driver = setup_browser
-    wait = WebDriverWait(driver, 10)
+class TestFiscalYearPage:
 
-    # --- Pre-condition ---
-    login_helper(driver)
-    open_add_fiscal_year_modal(driver)
+    def test_tc_fe_fiscal_year_012(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    # --- Step 1: Select a valid Start Month ---
-    fill_start_date(driver, date_str= FillStartDate.date_str)  
+        # Instantiate dynamic start date (contains input date & all expected calculated fields)
+        start_data = FillStartDate()
 
-    # --- Step 2: Verify auto-populated fields in the modal ---
-    start_date_val = driver.find_element(By.XPATH, Options.START_DATE).get_attribute("value")
-    end_date_val = driver.find_element(By.XPATH, Options.END_DATE).get_attribute("value")
-    fy_name_val = driver.find_element(By.XPATH, Options.FY_NAME_INPUT).get_attribute("value")
-    fy_code_val = driver.find_element(By.XPATH, Options.FY_CODE_INPUT).get_attribute("value")
+        # Pre-condition: Open 'Add Fiscal Year' modal
+        assert page.click_add_fiscal_year_button(), "Failed to click '+ Add Fiscal Year' button."
+        assert page.is_fiscal_year_modal_visible(), "The 'Add Fiscal Year' modal failed to pop up."
 
-    assert end_date_val != "", "End Date should be automatically populated."
-    assert fy_name_val != "", "Fiscal Year name should be automatically populated."
-    assert fy_code_val != "", "FY Code should be automatically populated."
+        # Step 1: Select a valid Start Date
+        assert page.fill_fiscal_year_form(start_data.date_str), f"Failed to input start date '{start_data.date_str}'."
+        time.sleep(2)
+        # Step 2: Verify that End Date, Fiscal Year, and FY Code fields are automatically populated
+        assert page.get_auto_end_date() == start_data.expected_end_date, "End Date was not automatically populated correctly."
+        assert page.get_auto_fiscal_year() == start_data.expected_fiscal_year, "Fiscal Year was not automatically populated correctly."
+        assert page.get_auto_fy_code() == start_data.expected_fy_code, "FY Code was not automatically populated correctly."
 
-    # --- Step 3: Click the "Save" button ---
-    save_btn = wait.until(EC.element_to_be_clickable((By.XPATH, Buttons.SAVE_BUTTON)))
-    save_btn.click()
+        # Step 3: Click the "Save" button
+        assert page.click_save_only_modal_fiscal_year(), "Failed to click Save button."
 
-    # --- Step 4: Observe confirmation message and verify created record ---
-    # 1. Verify Toast Message
-    toast_element = wait.until(EC.visibility_of_element_located((By.XPATH, Confirmation_Dialogue.TOAST_MESSAGE)))
-    assert "Fiscal year registered successfully" in toast_element.text, \
-        f"Expected toast message not found. Got: {toast_element.text}"
+        assert page.check_toast_message_fiscal_year(expected_text="fiscal year registered successfully"), "Input Start Date failed. Check you Start Date input"
+        
 
-    # 2. Verify modal closes & record is present in table
-    wait.until(EC.invisibility_of_element_located((By.XPATH, Options.START_DATE)))
-
-    select_status(driver,status="Active")
-    time.sleep(2)
-    # Wait until table rows exist using your Table class
-    wait.until(EC.presence_of_all_elements_located((By.XPATH, Table.TABLE_ROWS)))
-    
-    table_content = driver.find_element(By.XPATH, "//tbody").text
-    assert fy_code_val in table_content, f"FY Code '{fy_code_val}' not found in Fiscal Year table."
-    assert fy_name_val in table_content, f"Fiscal Year '{fy_name_val}' not found in Fiscal Year table."
+        # Step 5: Verify table entry by searching year and validating matched cell outputs
+        assert page.verify_saved_fiscal_year_in_table(
+            start_date=start_data.date_str,
+            end_date=start_data.expected_end_date,
+            fiscal_year=start_data.expected_fiscal_year,
+            fy_code=start_data.expected_fy_code,
+        ), f"Saved record for '{start_data.date_str}' was not found or values mismatched in table."

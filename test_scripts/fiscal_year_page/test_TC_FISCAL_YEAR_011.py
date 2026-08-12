@@ -1,53 +1,30 @@
-from datetime import datetime
-import pytest
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from helpers import setup_browser, login_helper, open_add_fiscal_year_modal
-from locators import Options
+import time
+from data.fiscal_year_page_inputs import FillStartDate
+from utils.navigation_helpers import go_to_fiscal_year_page
 
-@pytest.mark.functionality
-def test_TC_FE_FISCAL_YEAR_011(setup_browser):
-    driver = setup_browser
-    wait = WebDriverWait(driver, 10)
-    
-    # Dynamic input string (Change this to any valid 'MM-YYYY')
-    start_date = "05-2012"
 
-    # Pre-condition: Open modal
-    login_helper(driver)
-    open_add_fiscal_year_modal(driver)
+class TestFiscalYearPage:
 
-    # 1. Dynamic Date Math & String Parsing
-    dt = datetime.strptime(start_date, "%m-%Y")
-    start_year = dt.year
-    start_month = dt.month
+    def test_tc_fe_fiscal_year_011(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    # Calculate end year dynamically based on 12-month period span
-    end_year = start_year if start_month == 1 else start_year + 1
+        # Instantiate dynamic start date (contains date_str, expected_fiscal_year & expected_fy_code)
+        start_data = FillStartDate()
 
-    # Formulate dynamic expected values
-    expected_fy_name = f"{start_year}-{end_year}"
-    expected_fy_code = f"FY{start_year}"
+        # Pre-condition: Click '+ Add Fiscal Year' button to open modal
+        assert page.click_add_fiscal_year_button(), "Failed to click '+ Add Fiscal Year' button."
+        assert page.is_fiscal_year_modal_visible(), "The 'Add Fiscal Year' modal failed to pop up."
 
-    # 2. Clear input cleanly & enter new date dynamically
-    start_input = wait.until(EC.element_to_be_clickable((By.XPATH, Options.START_DATE)))
-    
-    # Using React Native Event Dispatcher so any MM-YYYY value is reliably registered
-    driver.execute_script("""
-        var input = arguments[0];
-        var nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-        nativeInputValueSetter.call(input, arguments[1]);
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        input.dispatchEvent(new Event('change', { bubbles: true }));
-    """, start_input, start_date)
+        # Step 1 & 2: Select/Fill a valid Start Date
+        assert page.fill_fiscal_year_form(start_data.date_str), f"Failed to input start date '{start_data.date_str}'."
 
-    # 3. Assert Fiscal Year and FY Code match dynamic calculations
-    assert wait.until(
-        EC.text_to_be_present_in_element_value((By.XPATH, Options.FY_NAME_INPUT), expected_fy_name)
-    ), f"Expected Fiscal Year '{expected_fy_name}' for start month {start_date}."
+        # Step 3 & 4: Observe and compare the displayed Fiscal Year and FY Code with expected calculated values
+        actual_fiscal_year = page.get_auto_fiscal_year()
+        actual_fy_code = page.get_auto_fy_code()
 
-    assert wait.until(
-        EC.text_to_be_present_in_element_value((By.XPATH, Options.FY_CODE_INPUT), expected_fy_code)
-    ), f"Expected FY Code '{expected_fy_code}' for start month {start_date}."
+        assert actual_fiscal_year == start_data.expected_fiscal_year, (
+            f"Expected Fiscal Year '{start_data.expected_fiscal_year}', but got '{actual_fiscal_year}'"
+        )
+        assert actual_fy_code == start_data.expected_fy_code, (
+            f"Expected FY Code '{start_data.expected_fy_code}', but got '{actual_fy_code}'"
+        )

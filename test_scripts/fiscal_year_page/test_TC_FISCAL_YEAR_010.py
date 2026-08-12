@@ -1,41 +1,25 @@
-from datetime import datetime
-import pytest
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from helpers import login_helper, open_add_fiscal_year_modal, setup_browser
-from locators import Options
+import time
+from data.fiscal_year_page_inputs import FillStartDate
+from utils.navigation_helpers import go_to_fiscal_year_page
 
-@pytest.mark.functionality
-def test_TC_FE_FISCAL_YEAR_010(setup_browser):
-    driver = setup_browser
-    wait = WebDriverWait(driver, 10)
-    
-    # Dynamic input string (Change this to any 'MM-YYYY')
-    start_date = "12-2021"
 
-    # Pre-condition: Open modal
-    login_helper(driver)
-    open_add_fiscal_year_modal(driver)
+class TestFiscalYearPage:
 
-    # 1. Clear input & trigger React state change dynamically via JS
-    start_input = wait.until(EC.presence_of_element_located((By.XPATH, Options.START_DATE)))
-    
-    driver.execute_script("""
-        var input = arguments[0];
-        var nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-        nativeInputValueSetter.call(input, arguments[1]);
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        input.dispatchEvent(new Event('change', { bubbles: true }));
-    """, start_input, start_date)
+    def test_tc_fe_fiscal_year_010(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    # 2. Dynamic Date Math (Calculates exactly +11 months to complete a 12-month period)
-    dt = datetime.strptime(start_date, "%m-%Y")
-    expected_year = dt.year if dt.month == 1 else dt.year + 1
-    expected_month = 12 if dt.month == 1 else dt.month - 1
-    expected_end = f"{expected_month:02d}-{expected_year}"
+        # Instantiate dynamic start date (contains date_str & expected_end_date)
+        start_data = FillStartDate()
 
-    # 3. Assert auto-populated End Date matches dynamic 12-month calculation
-    assert wait.until(
-        EC.text_to_be_present_in_element_value((By.XPATH, Options.END_DATE), expected_end)
-    ), f"End Date boundary check failed. Expected '{expected_end}' for start month {start_date}."
+        # Step 1: Open 'Add Fiscal Year' modal
+        assert page.click_add_fiscal_year_button(), "Failed to click '+ Add Fiscal Year' button."
+        assert page.is_fiscal_year_modal_visible(), "The 'Add Fiscal Year' modal failed to pop up."
+
+        # Step 2: Select/Fill a valid Start Date
+        assert page.fill_fiscal_year_form(start_data.date_str), f"Failed to input start date '{start_data.date_str}'."
+
+        # Step 3, 4 & 5: Observe and compare the displayed End Date with the expected 12-month period End Date
+        actual_end_date = page.get_auto_end_date()
+        assert actual_end_date == start_data.expected_end_date, (
+            f"Expected 12-month End Date '{start_data.expected_end_date}', but got '{actual_end_date}'"
+        )

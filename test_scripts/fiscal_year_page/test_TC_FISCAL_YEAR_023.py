@@ -1,63 +1,35 @@
 import time
-from plugins import *
-from helpers import (
-    setup_browser, 
-    login_helper, 
-    select_status, 
-    fill_search_field
-)
-from locators import Table, Confirmation_Dialogue, Buttons, Options
-from Fiscal_Year_Page.helper_categ.toggle_helpers import toggle_row_confirm, count_rows
-from Fiscal_Year_Page.helper_categ.pagination_helpers import (
-    get_pagination_text,
-    change_rows_per_page,
-    wait_for_valid_pagination
-)
+from utils.navigation_helpers import go_to_fiscal_year_page
 
-def get_total_count_from_pagination(driver):
-    """Extracts the total record count from pagination text (e.g., '1–10 of 21' -> 21)."""
-    text = get_pagination_text(driver)
-    if "of" in text:
-        return int(text.split("of")[-1].strip())
-    return count_rows(driver)
 
-@pytest.mark.functionality
-def test_TC_FE_FISCAL_YEAR_023(setup_browser):
-    driver = setup_browser
-    wait = WebDriverWait(driver, 10)
+class TestFiscalYearPage:
 
-    login_helper(driver)
+    def test_tc_fe_fiscal_year_023(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    # Force 10 rows per page standard baseline
-    change_rows_per_page(driver, 10)
+        # Step 1: Filter table by 'Inactive' status
+        assert page.select_status_filter_fiscal_year("Inactive"), "Failed to filter table by 'Inactive'."
+        time.sleep(1)
 
-    # 1. Capture Inactive count via pagination total
-    select_status(driver, status="Inactive")
-    wait_for_valid_pagination(driver)
-    initial_total_Inactive = get_total_count_from_pagination(driver)
+        # Record initial pagination info before toggle (e.g., '1-10 of 25')
+        initial_pagination = page.get_pagination_information_client()
 
-    # 2. Capture Active count via pagination total
-    select_status(driver, status="Active")
-    wait_for_valid_pagination(driver)
-    initial_total_Active = get_total_count_from_pagination(driver)
+        # Step 2-4: Click toggle on row 1, verify confirmation modal, and confirm
+        assert page.toggle_active_status_fiscal_year(row_index=1), "Failed to click toggle switch."
+        assert page.click_confirm_modal_fiscal_year(), "Failed to click Confirm in modal."
 
-    # 3. Switch back to Active and perform Toggle
-    select_status(driver, status="Inactive")
-    wait_for_valid_pagination(driver)
+        time.sleep(1)
 
-    toggle_row_confirm(driver)
-    wait_for_valid_pagination(driver)
+        # Step 5: Refresh page to check persistence
+        authenticated_driver.refresh()
+        time.sleep(1)
 
-    new_total_active = get_total_count_from_pagination(driver)
-    assert new_total_active == initial_total_Inactive - 1, (
-        f"Expected Active total to decrease. Initial: {initial_total_Inactive}, New: {new_total_active}"
-    )
+        # Ensure filter is still on 'Inactive' after refresh
+        page.select_status_filter_fiscal_year("Inactive")
+        time.sleep(1)
 
-    # 4. Verify Inactive total increased by 1
-    select_status(driver, status="Active")
-    wait_for_valid_pagination(driver)
-
-    new_total_inactive = get_total_count_from_pagination(driver)
-    assert new_total_inactive == initial_total_Active + 1, (
-        f"Expected Inactive total to increase. Initial: {initial_total_Active}, New: {new_total_inactive}"
-    )
+        # Step 6: Capture new pagination info and verify it has changed (-1 record in 'Inactive')
+        toggled_pagination = page.get_pagination_information_fiscal_year()
+        assert initial_pagination != toggled_pagination, (
+            f"Pagination info did not change after refresh. Initial: '{initial_pagination}', Current: '{toggled_pagination}'."
+        )

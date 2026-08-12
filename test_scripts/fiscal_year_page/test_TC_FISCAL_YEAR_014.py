@@ -1,39 +1,25 @@
-import pytest
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait, Select
-from selenium.webdriver.support import expected_conditions as EC
-from helpers import (
-    setup_browser, 
-    login_helper, 
-    select_status_active, 
-    select_status_inactive
-)
-from locators import Options
+import time
+from utils.navigation_helpers import go_to_fiscal_year_page
 
-@pytest.mark.functionality
-def test_TC_FE_FISCAL_YEAR_014(setup_browser):
-    driver = setup_browser
-    wait = WebDriverWait(driver, 10)
 
-    # --- Pre-condition ---
-    login_helper(driver)
+class TestFiscalYearPage:
 
-    # Grab dropdown instance for assertions
-    dropdown_el = wait.until(EC.element_to_be_clickable((By.XPATH, Options.STATUS_DROPDOWN)))
-    select = Select(dropdown_el)
+    def test_tc_fe_fiscal_year_014(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    # --- Step 5: Check Default Selected Value ---
-    assert select.first_selected_option.text.strip() == "Active"
+        # Step 5: Verify default selected value is "Active"
+        assert page.verify_status_input_matches_fiscal_year(expected_text="Active"), (
+            "Default status filter value is not 'Active'."
+        )
 
-    # --- Step 2: Check Option Readability ---
-    actual_options = [option.text.strip() for option in select.options]
-    assert "Active" in actual_options
-    assert "Inactive" in actual_options
+        # Step 1, 2 & Expected 1, 2: Verify Status dropdown options list match expected values
+        assert page.verify_status_dropdown_options_fiscal_year(), (
+            "Status dropdown options do not match the expected list ('Active', 'Inactive')."
+        )
 
-    # --- Step 3 & 4: Select INACTIVE via Helper ---
-    select_status_inactive(driver)
-    assert select.first_selected_option.text.strip() == "Inactive"
-
-    # --- Step 3 & 4: Select ACTIVE via Helper ---
-    select_status_active(driver)
-    assert select.first_selected_option.text.strip() == "Active"
+        # Step 3, 4: Select an option (e.g., 'Inactive') and verify value updates
+        assert page.select_status_filter_fiscal_year("Inactive"), "Failed to select 'Inactive' from Status dropdown."
+        time.sleep(1)
+        assert page.verify_status_input_matches_fiscal_year(expected_text="Not Active"), (
+            "Status filter value did not update to 'Inactive' after selection."
+        )

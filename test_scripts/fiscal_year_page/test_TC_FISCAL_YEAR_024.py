@@ -1,37 +1,23 @@
 import time
-from plugins import *
-from helpers import (
-    setup_browser, 
-    login_helper, 
-    select_status
-)
-from Fiscal_Year_Page.helper_categ.toggle_helpers import toggle_row_confirm, count_rows
+from utils.navigation_helpers import go_to_fiscal_year_page
 
-@pytest.mark.ui
-def test_TC_FE_FISCAL_YEAR_024(setup_browser):
-    driver = setup_browser
 
-    # --- Pre-condition ---
-    login_helper(driver)
-    select_status(driver, status="Inactive")
-    time.sleep(2)
+class TestFiscalYearPage:
 
-    # Ensure there is at least 1 record to toggle
-    assert count_rows(driver) >= 1, "Expected at least 1 row to test toggle responsiveness."
+    def test_tc_fe_fiscal_year_024(self, authenticated_driver):
+        page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
-    # --- Step 1: Measure execution speed of the toggle action ---
-    start_time = time.perf_counter()
-    
-    # Perform toggle action
-    toggle_row_confirm(driver)
-    
-    end_time = time.perf_counter()
-    execution_duration = end_time - start_time
+        # Step 1 & 2: Click toggle switch and measure execution duration
+        start_time = time.time()
+        assert page.toggle_active_status_fiscal_year(row_index=1), "Failed to click toggle button."
+        response_time_ms = (time.time() - start_time) * 1000
 
-    # Optional logging to observe duration during test execution
-    print(f"\n[Performance Metrics] Toggle action completed in: {execution_duration:.4f} seconds ({execution_duration * 1000:.2f} ms)")
+        # Step 3: Verify confirmation modal is visible immediately
+        assert page.is_confirm_button_visible(), "Confirmation message failed to appear."
 
-    # --- Step 2: Assert toggle responsiveness constraint (< 300ms / 0.3s) ---
-    assert execution_duration <= 3, (
-        f"Toggle interaction took {execution_duration * 1000:.2f} ms, exceeding the 300 ms response threshold."
-    )
+        # Dismiss modal to clean up state
+        page.click_cancel_modal_fiscal_year()
+
+        # Expected 1: Verify response time is within acceptable performance limits (e.g., <= 300ms)
+        print(f"Toggle responsiveness duration: {response_time_ms:.2f} ms")
+        assert response_time_ms <= 3000, f"Toggle action exceeded 300ms threshold ({response_time_ms:.2f} ms)."
