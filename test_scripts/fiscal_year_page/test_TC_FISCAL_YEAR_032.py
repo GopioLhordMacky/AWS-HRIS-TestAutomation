@@ -2,10 +2,9 @@ import time
 from utils.navigation_helpers import go_to_fiscal_year_page
 from selenium.webdriver.common.by import By
 
-
 class TestFiscalYearPage:
 
-    def test_tc_fe_fiscal_year_031(self, authenticated_driver):
+    def test_tc_fe_fiscal_year_032(self, authenticated_driver):
         page = go_to_fiscal_year_page(authenticated_driver, via="url")
 
         time.sleep(2)

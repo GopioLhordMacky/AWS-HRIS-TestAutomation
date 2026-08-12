@@ -44,3 +44,6 @@ class PaginationPage(BasePage):
         return self.navigation.tab_navigation(PaginationLocators.PREV_PAGE_BTN,
                                                 [Keys.SPACE],
                                                         helper, *helper_args, **helper_kwargs)
+    def get_pagination_information(self):
+        """Returns pagination text string (e.g. '1-10 of 50')."""
+        return self.table.get_pagination_information()
