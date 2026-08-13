@@ -12,10 +12,10 @@ class TestFiscalYearPage:
         time.sleep(1)
 
         # Record initial pagination info before toggle (e.g., '1-10 of 25')
-        initial_pagination = page.get_pagination_information_client()
+        initial_pagination = page.get_pagination_information_fiscal_year()
 
         # Step 2-4: Click toggle on row 1, verify confirmation modal, and confirm
-        assert page.toggle_active_status_fiscal_year(row_index=1), "Failed to click toggle switch."
+        assert page.toggle_active_status_fiscal_year(), "Failed to click toggle switch."
         assert page.click_confirm_modal_fiscal_year(), "Failed to click Confirm in modal."
 
         time.sleep(1)

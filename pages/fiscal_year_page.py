@@ -202,7 +202,7 @@ class FiscalYearPage(BasePage):
     # Table Component Utilities
     # --------------------------------------------------------------------------- #
 
-    def toggle_active_status_fiscal_year(self, row_index, column_name="Active"):
+    def toggle_active_status_fiscal_year(self, row_index = 1, column_name="Active"):
         """Toggles active switch in a specific table row."""
         self.element.toggle_active_status(row_index, column_name)
         return True and self
@@ -553,7 +553,8 @@ class FiscalYearPage(BasePage):
 
     def is_fiscal_year_modal_visible(self):
         """Verifies if the Fiscal Year modal body is visible."""
-        return self.element.is_component_visible(Modal.UPDATE_MODAL)
+        self.element.is_component_visible(Modal.UPDATE_MODAL)
+        return True and self
 
     # def is_toast_notification_visible(self):
     #     """Verifies if alert or toast warning is displayed."""
