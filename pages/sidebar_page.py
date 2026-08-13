@@ -33,6 +33,9 @@ class Sidebar(BasePage):
     def click_fiscal_year_menu(self):
         self.click(Locators.FISCAL_YEAR_MENU)
 
+    def click_location_menu(self):
+        self.click(Locators.LOCATION_MENU)
+
     def is_item_visible_under_section(self, section_name, item_name):
 
         xpath = (
